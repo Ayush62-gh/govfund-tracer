@@ -11,3 +11,6 @@ build/
 .env
 .env.local
 .DS_Store
+
+# Explicitly track normalized SQLite database for teammates
+!backend/db/govfund.db
