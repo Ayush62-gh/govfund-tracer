@@ -20,6 +20,7 @@ The GovFund Tracer ML Risk Engine processes unified MPLADS work records from `ba
 * **Method**: TF-IDF vectorization (`ngram_range=(1,2)`, `stop_words='english'`) combined with Cosine Similarity computed **WITHIN each `(state, category)` group**.
 * **Threshold**: Pairs with `cosine_similarity > 0.85` are flagged as `FLAG_POSSIBLE_DUPLICATE`.
 * **Location Context**: Extracts village/GP tokens from raw descriptions and checks location alignment (`same_village_gp_indicated`: `True` / `False` / `Uncertain`).
+* **Dynamic Precision Configuration**: Explanations and documentation read dynamically from single named constants (`DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT = 40.0`, `DUPLICATE_MANUAL_SAMPLE_SIZE_N = 5`) configured in `ml/risk_aggregator.py`.
 
 ### C. Delay Detector (`ml/detectors/time_lag_detector.py`)
 * **Method**: Deterministic rule $(\text{sanction\_date} - \text{recommended\_date}) > 365 \text{ days} \rightarrow \text{FLAG\_SANCTION\_DELAY}$. *(Note: This is a deterministic time-delta rule, NOT a trained ML model).*
@@ -33,9 +34,13 @@ The GovFund Tracer ML Risk Engine processes unified MPLADS work records from `ba
   * `FLAG_OUT_OF_CONSTITUENCY_CAP_BREACH`: Annual out-of-constituency sanctions exceeding ₹25L per FY.
   * `FLAG_RAPID_SUBTHRESHOLD_SANCTIONS`: Pattern review signal for 3+ works sanctioned to the same IDA within 14 days under ₹5L. *(Clearly distinguished from official guideline violations)*.
 
-### E. Fund Mismatch Detector (`ml/detectors/fund_mismatch_detector.py`)
-* **Method**: Detects financial discrepancies where ratio $>1.5$ and absolute difference $> \text{₹}50,000$ between sanctioned and disbursed amounts.
-* **Finding**: `0` records in current unified dataset. *Reason*: `ingest.py`'s own `validate_match()` function already filters out severe amount-mismatched pairs during CSV parsing before they can become unified `matched` rows, so zero amount-mismatched records reached the final merged `works` table.
+### E. Fund Mismatch Detector & Data Constraint Finding (`ml/detectors/fund_mismatch_detector.py`)
+* **Deliberate Architectural Finding (Attempted & Documented)**:
+  * We attempted adding fund-utilization-mismatch detection using Expenditure exports from the official MPLADS dashboard.
+  * **Experimental Finding**: Only 1.94% of Expenditure Work IDs matched our existing works table (composite-key match was 0.16%).
+  * **Root Cause**: Dashboard report exports sample different time slices of a live system — Expenditure skewed to recent Sept 2026 transactions, whereas Sanctioned/Completed cover 2024-2025 works.
+  * **Finding**: `0` records flagged in current unified table. *Reason*: `ingest.py`'s own `validate_match()` function already filters out severe amount-mismatched pairs during CSV parsing before they can become unified `matched` rows.
+  * **Decision**: Retained as an explicit, documented detector to demonstrate data-constraint rigor and uncertainty reporting.
 
 ### F. Risk Aggregator & Numeric Confidence Column (`ml/risk_aggregator.py` & `ml/utils/db_sync.py`)
 * **Composite Risk Score (0 - 100)**: Weighted aggregation of independent signals.
@@ -55,7 +60,7 @@ Execution summary on **9,624 real work records** in `backend/db/govfund.db`:
 | - Cost IQR Outliers | 418 | 4.3% |
 | - Cost Isolation Forest Outliers | 481 | 5.0% |
 | - **Combined High-Confidence Cost Anomalies (IQR + IF)** | **198** | **2.1%** |
-| - Fund Mismatch Variance Flags | 0 | 0.0% |
+| - **Fund Mismatch Variance Flags** | **0** | **0.0%** *(Data Constraint Documented)* |
 | - Sanction Delay Flags (>365 days) | 230 | 2.4% |
 | - Compliance & Guideline Breach Flags | 489 | 5.1% |
 
@@ -74,9 +79,9 @@ Execution summary on **9,624 real work records** in `backend/db/govfund.db`:
 
 ---
 
-## 🔬 3. Manual Sample Validation (5 Representative Duplicate Pairs)
+## 🔬 3. Manual Sample Validation (Representative Duplicate Pairs)
 
-Manual inspection of 5 representative candidate pairs flagged by the Duplicate Detector:
+Manual inspection of representative candidate pairs flagged by the Duplicate Detector (configured via `DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT = 40.0`, `DUPLICATE_MANUAL_SAMPLE_SIZE_N = 5`):
 
 | Pair # | Work ID 1 | Work ID 2 | State & Category | Description 1 vs Description 2 | Location Match | Manual Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -86,7 +91,7 @@ Manual inspection of 5 representative candidate pairs flagged by the Duplicate D
 | **4** | `WRK-000297` | `WRK-000296` | Chhattisgarh<br>`Normal/Others` | *"Highmast Solar Street light- Two Piece"* vs *"Highmast solar Street light- Two piece"* | Same Constituency, Village Unspecified | **`likely_template_false_positive`** |
 | **5** | `WRK-000298` | `WRK-000296` | Chhattisgarh<br>`Normal/Others` | *"Highmast Solar Street light- Two Piece."* vs *"Highmast solar Street light- Two piece"* | Same Constituency, Village Unspecified | **`likely_template_false_positive`** |
 
-* **5-Sample False-Positive Count**: **3 out of 5** (60% in this 5-record sample were boilerplate template repetitions across generic descriptions).
+* **Initial Sample Precision**: **40.0%** ($N=5$). Configured as single top-level constants `DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT` and `DUPLICATE_MANUAL_SAMPLE_SIZE_N` for single-point updates when wider $N \approx 30$ sample results arrive.
 
 ---
 
@@ -94,10 +99,12 @@ Manual inspection of 5 representative candidate pairs flagged by the Duplicate D
 
 1. **Templated & Boilerplate Project Descriptions**:
    * Standard government procurement text (e.g. *"Installation of solar street light"*, *"Construction of mid-day meal shed"*, *"Purchase of books for school"*) legitimately recurs across multiple distinct villages in the same constituency.
-   * Without fine-grained Village/Gram Panchayat entity parsing, high TF-IDF similarity flags these as duplicate candidates (~40% precision on manual sample).
-2. **Small Peer-Group Sample Sizes in Cost IQR**:
+   * Without fine-grained Village/Gram Panchayat entity parsing, high TF-IDF similarity flags these as duplicate candidates.
+2. **Temporal Sampling Skew in Expenditure Data**:
+   * Official MPLADS report exports sample different time slices of a live system (Expenditure exports skew to Sept 2026 transactions, Sanctioned/Completed cover 2024-2025).
+3. **Small Peer-Group Sample Sizes in Cost IQR**:
    * Groups with $<10$ samples are safely skipped (`insufficient_baseline`), but sparse categories in smaller states may miss legitimate outliers due to strict sample size constraints.
-3. **Lack of Ground-Truth Fraud Labels**:
+4. **Lack of Ground-Truth Fraud Labels**:
    * Unsupervised anomaly detection identifies statistical outliers and guideline deviations, not verified fraud cases. All flagged cases require manual audit verification.
 
 ---

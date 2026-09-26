@@ -2147,7 +2147,7 @@
     "flags": [
       "FLAG_POSSIBLE_DUPLICATE"
     ],
-    "explanation": "Medium Risk (34.6/100, Moderate Confidence [1 detector(s) triggered]): Candidate Duplicate Work: 86.5% description similarity with Work ID #WRK-001170 in same constituency (~40% precision on manual validation due to standard scheme templates across villages; Location Match: Location Unspecified).",
+    "explanation": "Medium Risk (34.6/100, Moderate Confidence [1 detector(s) triggered]): Candidate Duplicate Work: 86.5% description similarity with Work ID #WRK-001170 in same constituency (~40% precision on N=5 manual sample due to standard scheme templates across villages; Location Match: Location Unspecified).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2181,7 +2181,7 @@
     "flags": [
       "FLAG_POSSIBLE_DUPLICATE"
     ],
-    "explanation": "Medium Risk (34.8/100, Moderate Confidence [1 detector(s) triggered]): Candidate Duplicate Work: 87.0% description similarity with Work ID #WRK-001158 in same constituency (~40% precision on manual validation due to standard scheme templates across villages; Location Match: Location Unspecified).",
+    "explanation": "Medium Risk (34.8/100, Moderate Confidence [1 detector(s) triggered]): Candidate Duplicate Work: 87.0% description similarity with Work ID #WRK-001158 in same constituency (~40% precision on N=5 manual sample due to standard scheme templates across villages; Location Match: Location Unspecified).",
     "q1": null,
     "q3": null,
     "iqr": null,

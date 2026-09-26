@@ -1,5 +1,13 @@
 from typing import Dict, Any, List
 
+# ==============================================================================
+# CONFIGURABLE MANUAL SAMPLE PRECISION CONSTANTS
+# ==============================================================================
+# Update these constants when wider manual validation sample results land (N ~ 30)
+DUPLICATE_MANUAL_SAMPLE_SIZE_N = 5
+DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT = 40.0
+# ==============================================================================
+
 def aggregate_risk_scores(
     df_works,
     dup_results: Dict[str, Dict[str, Any]],
@@ -44,7 +52,7 @@ def aggregate_risk_scores(
             loc_note = "Confirmed Same Village" if loc_status == "True" else "Different Villages in Same Constituency" if loc_status == "False" else "Location Unspecified"
             explanation_parts.append(
                 f"Candidate Duplicate Work: {sim_pct}% description similarity with Work ID #{matched_id} in same constituency "
-                f"(~40% precision on manual validation due to standard scheme templates across villages; Location Match: {loc_note})"
+                f"(~{DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT:.0f}% precision on N={DUPLICATE_MANUAL_SAMPLE_SIZE_N} manual sample due to standard scheme templates across villages; Location Match: {loc_note})"
             )
             
         # 2. Cost Anomaly Signal (Up to 40 pts)
