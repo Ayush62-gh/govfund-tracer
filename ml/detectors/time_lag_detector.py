@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 from typing import Dict, Any
+from datetime import datetime
 
-def detect_time_lags(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
+def detect_time_lags(df: pd.DataFrame, ref_date=None) -> Dict[str, Dict[str, Any]]:
     """
     Detects severe administrative sanction delays, execution stagnation, and time lag anomalies.
     
@@ -18,8 +19,8 @@ def detect_time_lags(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
     sanc_dt = pd.to_datetime(df['sanction_date'], errors='coerce')
     comp_dt = pd.to_datetime(df['completion_date'], errors='coerce')
     
-    # Current benchmark date for open works
-    ref_date = pd.to_datetime('2026-09-01')
+    # Dynamic benchmark date for open works (defaults to today's date if not explicitly passed)
+    ref_date = pd.to_datetime(ref_date) if ref_date is not None else pd.to_datetime(datetime.now().date())
     
     for idx, row in df.iterrows():
         w_id = row['work_id']

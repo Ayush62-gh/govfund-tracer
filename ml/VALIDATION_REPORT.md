@@ -118,3 +118,25 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
 * **Sample Validation JSON**: [`ml/sample_output_validation.json`](file:///c:/Users/sonim/Desktop/GovFundTracer/govfund-tracer/ml/sample_output_validation.json)
 * **Sample Validation CSV**: [`ml/sample_output_validation.csv`](file:///c:/Users/sonim/Desktop/GovFundTracer/govfund-tracer/ml/sample_output_validation.csv)
 * **Master Script**: [`ml/train_and_predict.py`](file:///c:/Users/sonim/Desktop/GovFundTracer/govfund-tracer/ml/train_and_predict.py)
+
+---
+
+## Phase 1 Bug-Fix Re-Validation (2026-09-26)
+
+### Detector Flagged-Record Counts:
+* **Total Records Processed**: 9,624
+* **Total Flagged Risk Records**: 2,296 (23.9%)
+  * **Possible Duplicate Candidate Records**: 1,250
+  * **Cost IQR Outliers**: 418
+  * **Cost Isolation Forest Outliers**: 483 (grouped per `(state, category)`)
+  * **Combined High-Confidence Cost Anomalies (IQR + IF)**: 237
+  * **Fund Mismatch Variance Flags (`FLAG_FUND_MISMATCH`)**: **25 records**
+  * **Sanction Delay Flags (>365 days / Stagnant)**: 292 (dynamic `ref_date`)
+  * **Compliance & Guideline Breach Flags**: 489
+
+### Risk Score Distribution (SQL Query on `works.risk_score`):
+* 🔴 **High Risk (66 - 100)**: **27 records (0.3%)**
+* 🟡 **Medium Risk (31 - 65)**: **1,461 records (15.2%)**
+* 🟢 **Low Risk (0 - 30)**: **8,136 records (84.5%)**
+
+> **Fund Mismatch Detector Finding**: `FLAG_FUND_MISMATCH` now catches **25 records** (versus 0 before this phase) by cross-referencing split ingestion records sharing the same `composite_key` across `sanctioned_only` / sanction amount rows and `completed_only` / disbursed amount rows.
