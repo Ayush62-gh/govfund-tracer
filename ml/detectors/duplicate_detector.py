@@ -106,12 +106,24 @@ def detect_duplicates(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
                 elif tokens_i or tokens_j:
                     same_village = "Uncertain"
                     
+                raw_cosine = max_sim
+                adj_score = raw_cosine
+                if same_village == "False":
+                    adj_score = raw_cosine * 0.5
+                    
+                if adj_score >= 0.6:
+                    flag_code = 'FLAG_POSSIBLE_DUPLICATE'
+                elif adj_score >= 0.4:
+                    flag_code = 'FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE'
+                else:
+                    continue  # Adjusted score < 0.4: exclude from results
+                    
                 results[w_id_i] = {
-                    'duplicate_score': round(max_sim, 4),
-                    'cosine_similarity': round(max_sim, 4),
+                    'duplicate_score': round(adj_score, 4),
+                    'cosine_similarity': round(raw_cosine, 4),
                     'matched_work_id': best_match_id,
                     'flag': True,
-                    'flag_code': 'FLAG_POSSIBLE_DUPLICATE',
+                    'flag_code': flag_code,
                     'location_1': f"{const_i}, {st}",
                     'location_2': f"{constituencies[best_j_idx]}, {st}",
                     'village_gp_1': v_gp_i,

@@ -142,3 +142,21 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
 > **Fund Mismatch Detector Finding**: Restricting Pass 2 cross-referencing strictly to `source == 'sanctioned_only'` and `source == 'completed_only'` split rows eliminates spurious cross-matches against already-matched (`source == 'matched'`) records sharing identical `composite_key` templates, yielding **0 records** flagged by `FLAG_FUND_MISMATCH` on the current ingested dataset.
 > 
 > **Investigation Note**: The 4 genuine amount-mismatch conflicts logged in `backend/db/merge_report.txt` (ratios 1.67x-3.42x) do not survive as comparable `sanctioned_only` + `completed_only` pairs in the final `works` table, because `backend/ingest.py`'s greedy matching algorithm finds alternate (sometimes coincidental) valid partners for each side before giving up, and only logs the original conflict as text rather than persisting it as data. This means Pass 2's 0-record result is correct given current `ingest.py` behavior — the ML layer cannot recover this signal without a change to `backend/ingest.py` itself (specifically: persisting rejected match candidates as flaggable records instead of only logging them to `merge_report.txt` and discarding them). This is tracked as a backend-side follow-up, out of scope for the `ml/` folder.
+
+---
+
+## Phase 2 Guideline & Precision Fixes (2026-09-26)
+
+### Guideline Cap Verification:
+* **`TRUST_SOCIETY_LIFETIME_CAP = 5,000,000` (₹50 Lakh)** and **`OUT_OF_CONSTITUENCY_ANNUAL_CAP = 2,500,000` (₹25 Lakh)** were independently verified against official MPLADS Guidelines (Para 3.21.2 & Para 3.12) and cross-checked with multiple independent government sources; both caps are confirmed correct.
+
+### Step 1 — MPLADS Trust/Society Cap Additions & Deprived Segment Relaxations:
+* **New Aggregate Cap (`FLAG_TRUST_ANNUAL_AGGREGATE_BREACH`)**: Added `TRUST_SOCIETY_ANNUAL_AGGREGATE_CAP = 10,000,000` (₹1 Crore per MP per FY across ALL trusts/societies combined). This newly flagged **26 work_ids** in the dataset where an MP's cumulative recommendations to trusts in a single FY exceeded ₹1 Crore.
+* **Relaxed Deprived-Segment Cap (`DEPRIVED_SEGMENT_LIFETIME_CAP`)**: Implemented `DEPRIVED_SEGMENT_KEYWORDS` matching for orphanages, old-age homes, blind/disabled institutions, etc. (Para 3.21.5). **0 work_ids** in the current dataset required the relaxed ₹1 Crore lifetime cap (none breached ₹50L).
+
+### Step 2 — Duplicate Detector Precision Adjustment via Location Signals:
+* **Score Adjustment**: Records with `same_village_gp_indicated == 'False'` (different villages detected in boilerplate template text) now receive a `0.5x` score penalty.
+* **Classification Breakdown**:
+  * **`FLAG_POSSIBLE_DUPLICATE` (high confidence, adjusted score $\ge 0.6$)**: **1,246 records** (down from 1,250).
+  * **`FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE` (adjusted score $0.4 \le s < 0.6$)**: **4 records** (absorbed the 4 template false positives).
+  * **Total Combined Duplicate-Related Records**: **1,250 records** (total candidate count preserved for auditor review).
