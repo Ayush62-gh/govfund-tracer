@@ -130,13 +130,13 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
   * **Cost IQR Outliers**: 418
   * **Cost Isolation Forest Outliers**: 483 (grouped per `(state, category)`)
   * **Combined High-Confidence Cost Anomalies (IQR + IF)**: 237
-  * **Fund Mismatch Variance Flags (`FLAG_FUND_MISMATCH`)**: **25 records**
+  * **Fund Mismatch Variance Flags (`FLAG_FUND_MISMATCH`)**: **0 records** (strict `sanctioned_only` + `completed_only` source filter)
   * **Sanction Delay Flags (>365 days / Stagnant)**: 292 (dynamic `ref_date`)
   * **Compliance & Guideline Breach Flags**: 489
 
 ### Risk Score Distribution (SQL Query on `works.risk_score`):
-* 🔴 **High Risk (66 - 100)**: **27 records (0.3%)**
-* 🟡 **Medium Risk (31 - 65)**: **1,461 records (15.2%)**
+* 🔴 **High Risk (66 - 100)**: **15 records (0.2%)**
+* 🟡 **Medium Risk (31 - 65)**: **1,473 records (15.3%)**
 * 🟢 **Low Risk (0 - 30)**: **8,136 records (84.5%)**
 
-> **Fund Mismatch Detector Finding**: `FLAG_FUND_MISMATCH` now catches **25 records** (versus 0 before this phase) by cross-referencing split ingestion records sharing the same `composite_key` across `sanctioned_only` / sanction amount rows and `completed_only` / disbursed amount rows.
+> **Fund Mismatch Detector Finding**: Restricting Pass 2 cross-referencing strictly to `source == 'sanctioned_only'` and `source == 'completed_only'` split rows eliminates spurious cross-matches against already-matched (`source == 'matched'`) records sharing identical `composite_key` templates, yielding **0 records** flagged by `FLAG_FUND_MISMATCH` on the current ingested dataset.

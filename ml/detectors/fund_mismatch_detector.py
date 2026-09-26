@@ -58,8 +58,8 @@ def detect_fund_mismatch(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
             if len(group) < 2:
                 continue
                 
-            sanc_rows = group[group['sanction_amount'].notna() & (group['sanction_amount'] > 0)]
-            comp_rows = group[group['amount_disbursed'].notna() & (group['amount_disbursed'] > 0)]
+            sanc_rows = group[(group['source'] == 'sanctioned_only') & group['sanction_amount'].notna() & (group['sanction_amount'] > 0)]
+            comp_rows = group[(group['source'] == 'completed_only') & group['amount_disbursed'].notna() & (group['amount_disbursed'] > 0)]
             
             for _, s_row in sanc_rows.iterrows():
                 s_id = s_row['work_id']
