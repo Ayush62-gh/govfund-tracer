@@ -172,13 +172,15 @@ const ProtectedLayout = ({ isDarkMode, toggleDarkMode }) => {
             />
 
             {/* ── Shared functional routes (all authenticated roles) ── */}
-            <Route path="/alerts"     element={<AlertsCenter />} />
-            <Route path="/financials" element={<FinancialAnalytics />} />
-            <Route path="/tracker"    element={<WorkTracker />} />
-            <Route path="/predictive" element={<PredictiveInsights />} />
-            <Route path="/reports"    element={<Reports />} />
-            <Route path="/districts"  element={<FinancialAnalytics />} />
-            <Route path="/states"     element={<FinancialAnalytics />} />
+            <Route path="/alerts"       element={<AlertsCenter />} />
+            <Route path="/risk-scores"  element={<AlertsCenter />} />
+            <Route path="/risk-monitor" element={<AlertsCenter />} />
+            <Route path="/financials"   element={<FinancialAnalytics />} />
+            <Route path="/tracker"      element={<WorkTracker />} />
+            <Route path="/predictive"   element={<PredictiveInsights />} />
+            <Route path="/reports"      element={<Reports />} />
+            <Route path="/districts"    element={<FinancialAnalytics />} />
+            <Route path="/states"       element={<FinancialAnalytics />} />
 
             {/* ── Admin Panel: requires Admin or Ministry role ── */}
             <Route

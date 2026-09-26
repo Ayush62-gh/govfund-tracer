@@ -271,34 +271,34 @@ const STATE_DISTRICTS = {
   'Puducherry': ['Karaikal','Mahe','Puducherry','Yanam'],
 };
 
-// ── Demo credentials for testing ─────────────────────────────────────────────
+// ── Demo credentials for testing (Fictionalized per Privacy Policy) ──────────
 const DEMO_CREDENTIALS = [
   {
     roleId: 'mp',
     role: 'MP',
-    email: 'rajeshwar.mp@sansad.nic.in',
+    email: 'arjun.mp@sansad.nic.in',
     password: 'MP@Varanasi2024',
     state: 'Uttar Pradesh',
     district: '',
-    label: 'Dr. Rajeshwar Sharma (Varanasi)',
+    label: 'Shri Arjun Sharma, MP (Varanasi)',
   },
   {
     roleId: 'mp',
     role: 'MP',
-    email: 'supriya.mp@sansad.nic.in',
+    email: 'priya.mp@sansad.nic.in',
     password: 'MP@Baramati2024',
     state: 'Maharashtra',
     district: '',
-    label: 'Smt. Supriya Sule (Baramati)',
+    label: 'Smt. Priya Verma, MP (Baramati)',
   },
   {
     roleId: 'mp',
     role: 'MP',
-    email: 'ravishankar.mp@sansad.nic.in',
+    email: 'vikram.mp@sansad.nic.in',
     password: 'MP@Patna2024',
     state: 'Bihar',
     district: '',
-    label: 'Shri Ravi Shankar Prasad (Patna Sahib)',
+    label: 'Shri Vikram Rathore, MP (Patna Sahib)',
   },
   {
     roleId: 'district',
@@ -307,7 +307,7 @@ const DEMO_CREDENTIALS = [
     password: 'DM@Varanasi2024',
     state: 'Uttar Pradesh',
     district: 'Varanasi',
-    label: 'DM Varanasi — Shri S. Rajalingam, IAS',
+    label: 'DM Varanasi — Shri K. Anand, IAS',
   },
   {
     roleId: 'district',
@@ -316,7 +316,7 @@ const DEMO_CREDENTIALS = [
     password: 'DM@Patna2024',
     state: 'Bihar',
     district: 'Patna',
-    label: 'DM Patna — Dr. Chandrashekhar Singh, IAS',
+    label: 'DM Patna — Dr. M. Soni, IAS',
   },
   {
     roleId: 'state',
@@ -325,7 +325,7 @@ const DEMO_CREDENTIALS = [
     password: 'SNA@UP2024',
     state: 'Uttar Pradesh',
     district: '',
-    label: 'SNA Uttar Pradesh — Smt. Aradhana Shukla, IAS',
+    label: 'SNA Uttar Pradesh — Smt. Neha Kapoor, IAS',
   },
   {
     roleId: 'state',
@@ -334,7 +334,7 @@ const DEMO_CREDENTIALS = [
     password: 'SNA@Bihar2024',
     state: 'Bihar',
     district: '',
-    label: 'SNA Bihar — Shri Pratyaya Amrit, IAS',
+    label: 'SNA Bihar — Shri P. Saxena, IAS',
   },
   {
     roleId: 'ministry',
@@ -343,7 +343,7 @@ const DEMO_CREDENTIALS = [
     password: 'MoSPI@Ministry24',
     state: '',
     district: '',
-    label: 'JS (MPLADS), MoSPI — Shri Alok Kumar Verma',
+    label: 'JS (MPLADS), MoSPI — Shri Amit Verma',
   },
 ];
 

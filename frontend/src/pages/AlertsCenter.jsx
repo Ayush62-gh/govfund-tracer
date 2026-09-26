@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import DataTable from '../components/common/DataTable';
 import RiskBadge from '../components/common/RiskBadge';
 import AlertDetailModal from '../components/alerts/AlertDetailModal';
+import RiskScoreContractViewer from '../components/risk/RiskScoreContractViewer';
 import {
   ShieldAlert,
   Filter,
@@ -16,19 +17,24 @@ import {
   Calendar,
   Layers,
   MapPin,
+  Code2,
+  FileCheck2,
+  LayoutGrid,
+  TableProperties,
 } from 'lucide-react';
 import { formatINR, getCategoryMeta } from '../utils/formatters';
 
 /**
  * AlertsCenter Page Component
- * Central anomaly triage dashboard for flagged deviations, duplicate works, and cost surges.
- * Scoped to user jurisdiction under RBAC policies.
+ * Central AI Risk Score & Anomaly Detection Center.
+ * Integrates the pure Risk-Score JSON Contract Explorer along with institutional triage workflows.
  */
 export const AlertsCenter = () => {
   const { alerts, selectedAlert, setSelectedAlert, handleAlertAction } = useData();
   const { currentUser } = useAuth();
   const { t } = useLanguage();
 
+  const [activeTab, setActiveTab] = useState('contract_explorer'); // 'contract_explorer' | 'triage_table'
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedRisk, setSelectedRisk] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -75,7 +81,7 @@ export const AlertsCenter = () => {
       render: (val, row) => (
         <div>
           <span className="font-mono font-bold text-slate-800 dark:text-slate-200 block">{val}</span>
-          <span className="text-[10px] text-slate-400 font-mono">{row.workId}</span>
+          <span className="text-[10px] text-slate-400 font-mono">{row.workId || row.work_id}</span>
         </div>
       ),
     },
@@ -98,7 +104,7 @@ export const AlertsCenter = () => {
             <div className="font-bold text-slate-900 dark:text-slate-100 text-xs line-clamp-1 hover:text-blue-600">
               {val}
             </div>
-            <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{row.summary}</div>
+            <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{row.summary || row.explanation}</div>
           </div>
         );
       },
@@ -108,7 +114,7 @@ export const AlertsCenter = () => {
       label: 'Risk Score',
       width: '140px',
       sortable: true,
-      render: (val, row) => <RiskBadge level={row.riskLevel} score={val} size="sm" />,
+      render: (val, row) => <RiskBadge level={row.riskLevel} score={val || row.risk_score} size="sm" />,
     },
     {
       key: 'sanctionedAmount',
@@ -137,7 +143,7 @@ export const AlertsCenter = () => {
             {val}, {row.state}
           </div>
           <div className="text-[10px] text-slate-400 truncate max-w-[140px]">
-            {row.implementingAgency}
+            {row.implementingAgency || row.agency}
           </div>
         </div>
       ),
@@ -175,115 +181,145 @@ export const AlertsCenter = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded">
+            <span className="text-xs font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950 px-2.5 py-0.5 rounded">
               {currentUser.jurisdiction}
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold font-display text-slate-900 dark:text-white flex items-center gap-2">
             <ShieldAlert className="w-6 h-6 text-red-600" />
-            <span>Alerts & ML Anomaly Detection Center</span>
+            <span>AI Risk Score & Anomaly Detection Center</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Real-time automated screening of cost escalation, geospatial duplication, and norm breaches
+            Automated machine learning screening for cost outliers, possible duplicate works, execution delays, and fund mismatches
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 font-mono">
-            {filteredAlerts.length} Flagged Works in Scope
-          </span>
-        </div>
-      </div>
-
-      {/* Category Pills Filter */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {categories.map((cat) => (
+        {/* View Switcher: Contract Explorer vs Institutional Triage */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs shadow-sm">
           <button
-            key={cat.id}
             type="button"
-            onClick={() => setSelectedCategory(cat.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              selectedCategory === cat.id
-                ? 'bg-gov-blue text-white shadow-sm dark:bg-blue-700'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+            onClick={() => setActiveTab('contract_explorer')}
+            className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
+              activeTab === 'contract_explorer'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            {cat.label}
+            <Sparkles className="w-4 h-4" />
+            <span>Risk Score JSON Explorer</span>
           </button>
-        ))}
-      </div>
 
-      {/* Risk and Status Selectors */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div>
-          <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
-            Risk Severity
-          </label>
-          <select
-            value={selectedRisk}
-            onChange={(e) => setSelectedRisk(e.target.value)}
-            className="w-full text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
-          >
-            {riskLevels.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
-            Triage Status
-          </label>
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
-          >
-            {statuses.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="sm:col-span-2 flex items-end justify-end gap-2">
           <button
             type="button"
-            onClick={() => {
-              setSelectedCategory('all');
-              setSelectedRisk('all');
-              setSelectedStatus('all');
-            }}
-            className="px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            onClick={() => setActiveTab('triage_table')}
+            className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
+              activeTab === 'triage_table'
+                ? 'bg-slate-900 text-white dark:bg-slate-700 shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
           >
-            Reset Filters
+            <TableProperties className="w-4 h-4" />
+            <span>Vigilance Triage Table</span>
           </button>
         </div>
       </div>
 
-      {/* Flagged Works DataTable */}
-      <DataTable
-        columns={columns}
-        data={filteredAlerts}
-        searchKey="title"
-        pageSize={6}
-        exportFilename="MPLADS_Anomaly_Alerts.csv"
-      />
+      {/* Primary Tab View Content */}
+      {activeTab === 'contract_explorer' ? (
+        <RiskScoreContractViewer />
+      ) : (
+        <div className="space-y-6 animate-fade-in">
+          {/* Category Pills Filter */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedCategory === cat.id
+                    ? 'bg-gov-blue text-white shadow-sm dark:bg-blue-700'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Drill-down Modal */}
-      <AlertDetailModal
-        alert={selectedAlert}
-        isOpen={Boolean(selectedAlert)}
-        onClose={() => setSelectedAlert(null)}
-        onAction={handleAlertAction}
-      />
+          {/* Risk and Status Selectors */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div>
+              <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
+                Risk Severity
+              </label>
+              <select
+                value={selectedRisk}
+                onChange={(e) => setSelectedRisk(e.target.value)}
+                className="w-full text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+              >
+                {riskLevels.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1">
+                Triage Status
+              </label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+              >
+                {statuses.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="sm:col-span-2 flex items-end justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setSelectedRisk('all');
+                  setSelectedStatus('all');
+                }}
+                className="px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                Reset Filters
+              </button>
+            </div>
+          </div>
+
+          {/* Flagged Works DataTable */}
+          <DataTable
+            columns={columns}
+            data={filteredAlerts}
+            searchKey="title"
+            pageSize={6}
+            exportFilename="MPLADS_Anomaly_Alerts.csv"
+          />
+
+          {/* Drill-down Modal */}
+          <AlertDetailModal
+            alert={selectedAlert}
+            isOpen={Boolean(selectedAlert)}
+            onClose={() => setSelectedAlert(null)}
+            onAction={handleAlertAction}
+          />
+        </div>
+      )}
     </div>
   );
 };

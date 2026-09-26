@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Clock, AlertTriangle, CheckCircle2, MapPin, Building2, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle2, MapPin, Building2, Sparkles, Image as ImageIcon, Copy, TrendingUp } from 'lucide-react';
 import RiskBadge from '../common/RiskBadge';
 import { formatINR } from '../../utils/formatters';
+import { FLAG_METADATA } from '../../data/riskContractData';
 
 /**
  * WorkKanban Component
  * Displays works across 4 lifecycle stages: Sanctioned → In Progress → Delayed/At Risk → Completed
+ * Displays contract risk score, IDA, and multi-flag chips on cards.
  */
 export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
   const columns = [
@@ -42,7 +44,7 @@ export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
         return (
           <div
             key={col.id}
-            className="bg-slate-100/75 dark:bg-slate-900/60 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 flex flex-col h-full min-h-[500px]"
+            className="bg-slate-100/75 dark:bg-slate-900/60 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 flex flex-col h-full min-h-[500px]"
           >
             {/* Column Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
@@ -59,7 +61,7 @@ export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
             {/* Cards Column */}
             <div className="space-y-3 flex-1 overflow-y-auto pr-1">
               {stageWorks.length === 0 ? (
-                <div className="h-32 flex items-center justify-center text-xs text-slate-400 border border-dashed border-slate-300 dark:border-slate-800 rounded-lg">
+                <div className="h-32 flex items-center justify-center text-xs text-slate-400 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl">
                   No works in this stage
                 </div>
               ) : (
@@ -67,14 +69,14 @@ export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
                   <div
                     key={work.id}
                     onClick={() => onSelectWork && onSelectWork(work)}
-                    className="bg-white dark:bg-slate-800 rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-gov hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer transition-all duration-150 relative"
+                    className="bg-white dark:bg-slate-800 rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer transition-all duration-150 relative"
                   >
                     {/* Top Row: Category & Risk */}
                     <div className="flex items-center justify-between gap-1 mb-1.5">
-                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
                         {work.category}
                       </span>
-                      <RiskBadge level={work.riskLevel} score={work.riskScore} size="sm" showPulse={false} />
+                      <RiskBadge level={work.riskLevel} score={work.risk_score || work.riskScore} size="sm" showPulse={false} />
                     </div>
 
                     {/* Title */}
@@ -82,12 +84,18 @@ export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
                       {work.title}
                     </h4>
 
-                    {/* Meta info */}
+                    {/* Meta info: Work ID & IDA */}
                     <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
                       <div className="flex items-center justify-between">
                         <span>Work ID:</span>
-                        <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">{work.id}</span>
+                        <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">{work.id || work.work_id}</span>
                       </div>
+                      {work.ida && (
+                        <div className="flex items-center justify-between">
+                          <span>IDA:</span>
+                          <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">{work.ida}</span>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between">
                         <span>Sanctioned:</span>
                         <span className="font-bold text-slate-900 dark:text-slate-100 font-mono">
@@ -95,6 +103,20 @@ export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
                         </span>
                       </div>
                     </div>
+
+                    {/* Multi-Flag Chips if present */}
+                    {work.flags && work.flags.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {work.flags.map((f) => {
+                          const meta = FLAG_METADATA[f] || { label: f, badgeClass: 'bg-slate-100 text-slate-700' };
+                          return (
+                            <span key={f} className={`px-1.5 py-0.2 text-[9px] font-bold rounded ${meta.badgeClass}`}>
+                              {meta.label}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
 
                     {/* Physical vs Financial Progress Bars */}
                     <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60 space-y-1.5 text-[10px]">
@@ -147,7 +169,7 @@ export const WorkKanban = ({ works = [], onSelectWork, onVerifyPhotos }) => {
                             e.stopPropagation();
                             if (onVerifyPhotos) onVerifyPhotos(work);
                           }}
-                          className="text-[10px] font-bold text-gov-blue dark:text-blue-400 hover:underline"
+                          className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline"
                         >
                           Inspect Photos
                         </button>
