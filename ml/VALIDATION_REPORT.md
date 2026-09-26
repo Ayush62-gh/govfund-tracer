@@ -106,6 +106,10 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
    * Groups with $<10$ samples are safely skipped (`insufficient_baseline`), but sparse categories in smaller states may miss legitimate outliers due to strict sample size constraints.
 4. **Lack of Ground-Truth Fraud Labels**:
    * Unsupervised anomaly detection identifies statistical outliers and guideline deviations, not verified fraud cases. All flagged cases require manual audit verification.
+5. **Location Token Keyword List Limitation in `extract_village_gp_tokens`**:
+   * The location token extractor `extract_village_gp_tokens` relies on a fixed keyword list: `["village", "vill", "gp", "panchayat", "gram", "maug", "bazar", "faliya", "game", "at", "near"]`.
+   * **Limitation**: It does **NOT** include administrative division keywords such as `"block"`, `"ward"`, `"colony"`, `"nagar"`, `"tq"` (taluk/tehsil), `"mandal"`, or `"sec"`/`"sector"`.
+   * **Empirical Impact**: Descriptions distinguished only by block/ward/nagar/colony/tq/mandal designations (e.g. *"Installation of lights in Tiruvallur Municipality Ward no 1"* vs *"Ward no 2"* or *"Motihari Nagar..."*) fail to produce location tokens (`[]`). Consequently, the detector falls through to `same_village_gp_indicated = "Uncertain"` rather than extracting location tokens and flagging them as distinct locations (`"False"`). Empirical run on the 9,624 dataset shows **1,147 out of 1,250 candidate duplicate entries fall through to `"Uncertain"`**, with multiple pairs containing uncaptured administrative keywords.
 
 ---
 

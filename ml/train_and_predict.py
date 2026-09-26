@@ -191,7 +191,7 @@ def export_validation_sample(df_works: pd.DataFrame, final_records: List[Dict[st
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(sample_list[:100], f, indent=2)
         
-    df_sample = pd.DataFrame(sample_list[:200])
+    df_sample = pd.DataFrame(sample_list)
     df_sample.to_csv(csv_path, index=False)
     
     print(f"\n[Validation Export] Generated sample validation JSON at: {json_path}")
