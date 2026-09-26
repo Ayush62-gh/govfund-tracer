@@ -14,3 +14,4 @@ build/
 
 # Explicitly track normalized SQLite database for teammates
 !backend/db/govfund.db
+*.bak
