@@ -63,3 +63,12 @@ All log files and diff reports are written to `ml/logs/`:
 > [!IMPORTANT]
 > `ml/run_scheduled_pipeline.py` is currently designed for execution via command line or external OS schedulers (Cron / Task Scheduler).
 > There is **no in-app "Run Now" button or REST API endpoint** in the backend UI to trigger scheduled runs dynamically. Wiring scheduled pipeline execution into FastAPI background tasks or frontend admin panels requires backend endpoint updates, which are out of scope for the current ML module boundary.
+
+---
+
+## 6. ⚠️ KNOWN DEV-ENVIRONMENT LIMITATION
+
+In this development/demo git-tracked clone, `run_scheduled_pipeline.py`'s cleanup step runs `git checkout backend/db/govfund.db` after every run (to keep the working tree clean per this project's git hygiene convention). This means each run's 'before' snapshot always reads the original, never-scored raw database committed to git — NOT the previous run's actual computed output. As a result, consecutive test runs in this dev clone will show IDENTICAL diff numbers (confirmed empirically: two consecutive manual test runs both reported the same 20 newly-high-risk / 285 newly-flagged / 62 resolved / 527 significant-increase counts), because both are really comparing 'raw baseline' vs 'fresh computation', not 'previous run vs this run'.
+
+This is NOT a bug in the diff-computation logic itself — it is correct given its inputs. In a real production deployment, `backend/db/govfund.db` would NOT be under git version control at all (real databases aren't committed to git), so this git-checkout step would not exist, snapshots would correctly persist between runs, and the diff would show genuine day-over-day changes as new works are ingested and re-scored. This limitation is specific to demonstrating the feature inside this git-tracked development repository.
+

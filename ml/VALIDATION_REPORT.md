@@ -237,6 +237,9 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
 2. **Subsequent Pipeline Run**: Verified diff engine computation on repeated run (`ml/logs/diff_20260926_225606.json`).
 3. **Concurrency Lock Enforcement**: Manually created `.pipeline.lock` and attempted execution. Script trapped lock collision, printed `[LOCK ERROR]`, aborted pipeline execution immediately with exit code `1`, and safely preserved existing state.
 
+> **Known Dev-Environment Note**: In this git-tracked development clone, `run_scheduled_pipeline.py` executes `git checkout backend/db/govfund.db` after each run to preserve repository cleanliness. Consequently, consecutive test runs compare fresh computations against the un-scored raw baseline rather than the prior run's state, yielding identical diff counts (20 newly high risk, 285 newly flagged, 62 resolved, 527 significant score increases). In production, un-versioned database persistence will allow diffs to reflect true day-over-day incremental data ingestion.
+
+
 
 
 
