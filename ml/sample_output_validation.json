@@ -42,7 +42,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9500,000, Days: 437.0) | Administrative sanction lag of 437 days (14.6 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b95.00 Lakh) shows anomalous spending velocity relative to approval time (437 days) | Administrative Sanction Lag: Took 14.6 months (437 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -102,7 +102,7 @@
     "flags": [
       "FLAG_COST_ANOMALY_COMBINED"
     ],
-    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): HIGH-CONFIDENCE COST ANOMALY (IQR + Isolation Forest): Sanction \u20b91,500,000 exceeds upper bound \u20b9646,682 (Q1: \u20b9398,992, Q3: \u20b9498,068, IQR: \u20b999,076, N=22).",
+    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): Unusually High Cost Estimate: Sanctioned cost of \u20b915.00 Lakh exceeds the statistical peer limit of \u20b96.47 Lakh for 'Normal/Others' in Karnataka (peer sample N=22, confirmed by dual statistical & ML models).",
     "q1": 398992.25,
     "q3": 498068.25,
     "iqr": 99076.0,
@@ -133,7 +133,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -194,7 +194,7 @@
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS",
       "FLAG_STAGNANT_WORK"
     ],
-    "explanation": "Low Risk (22.2/100, High Confidence [2 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold | Work has been sanctioned for 740 days (2.0 years) without completion.",
+    "explanation": "Low Risk (22.2/100, High Confidence [2 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting) | Project Execution Stagnation: Work has been sanctioned for 2.0 years (740 days) without physical completion.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -284,7 +284,7 @@
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS",
       "FLAG_STAGNANT_WORK"
     ],
-    "explanation": "Low Risk (22.2/100, High Confidence [2 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold | Work has been sanctioned for 745 days (2.0 years) without completion.",
+    "explanation": "Low Risk (22.2/100, High Confidence [2 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting) | Project Execution Stagnation: Work has been sanctioned for 2.0 years (745 days) without physical completion.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -316,7 +316,7 @@
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS",
       "FLAG_STAGNANT_WORK"
     ],
-    "explanation": "Low Risk (22.2/100, High Confidence [2 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold | Work has been sanctioned for 745 days (2.0 years) without completion.",
+    "explanation": "Low Risk (22.2/100, High Confidence [2 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting) | Project Execution Stagnation: Work has been sanctioned for 2.0 years (745 days) without physical completion.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -376,7 +376,7 @@
     "flags": [
       "FLAG_STAGNANT_WORK"
     ],
-    "explanation": "Low Risk (10.0/100, Moderate Confidence [1 detector(s) triggered]): Work has been sanctioned for 740 days (2.0 years) without completion.",
+    "explanation": "Low Risk (10.0/100, Moderate Confidence [1 detector(s) triggered]): Project Execution Stagnation: Work has been sanctioned for 2.0 years (740 days) without physical completion.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -407,7 +407,7 @@
     "flags": [
       "FLAG_STAGNANT_WORK"
     ],
-    "explanation": "Low Risk (10.0/100, Moderate Confidence [1 detector(s) triggered]): Work has been sanctioned for 740 days (2.0 years) without completion.",
+    "explanation": "Low Risk (10.0/100, Moderate Confidence [1 detector(s) triggered]): Project Execution Stagnation: Work has been sanctioned for 2.0 years (740 days) without physical completion.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -496,7 +496,7 @@
     "flags": [
       "FLAG_COST_IQR_OUTLIER"
     ],
-    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): IQR Cost Outlier: Sanction \u20b91,602,957 exceeds upper bound \u20b91,072,307 for Normal/Others in West Bengal.",
+    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): Cost Limit Deviation: Sanctioned cost of \u20b916.03 Lakh is above the upper percentile ceiling (\u20b910.72 Lakh) for 'Normal/Others' in West Bengal.",
     "q1": 249985.5,
     "q3": 578914.0,
     "iqr": 328928.5,
@@ -557,7 +557,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -589,7 +589,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9242,105, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.42 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -650,7 +650,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -682,7 +682,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,098, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.45 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -714,7 +714,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -746,7 +746,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -778,7 +778,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -810,7 +810,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,098, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.45 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -842,7 +842,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,826, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -874,7 +874,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,826, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -906,7 +906,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -938,7 +938,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,356, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.45 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -970,7 +970,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1002,7 +1002,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1034,7 +1034,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,098, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.45 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1066,7 +1066,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1098,7 +1098,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,826, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1130,7 +1130,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1162,7 +1162,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,697, Days: 447.0) | Administrative sanction lag of 447 days (14.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (447 days) | Administrative Sanction Lag: Took 14.9 months (447 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1194,7 +1194,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9245,826, Days: 457.0) | Administrative sanction lag of 457 days (15.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.46 Lakh) shows anomalous spending velocity relative to approval time (457 days) | Administrative Sanction Lag: Took 15.2 months (457 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1226,7 +1226,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9247,496, Days: 444.0) | Administrative sanction lag of 444 days (14.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.47 Lakh) shows anomalous spending velocity relative to approval time (444 days) | Administrative Sanction Lag: Took 14.8 months (444 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1258,7 +1258,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9247,496, Days: 444.0) | Administrative sanction lag of 444 days (14.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.47 Lakh) shows anomalous spending velocity relative to approval time (444 days) | Administrative Sanction Lag: Took 14.8 months (444 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1290,7 +1290,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1322,7 +1322,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1354,7 +1354,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1386,7 +1386,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9247,496, Days: 444.0) | Administrative sanction lag of 444 days (14.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.47 Lakh) shows anomalous spending velocity relative to approval time (444 days) | Administrative Sanction Lag: Took 14.8 months (444 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1418,7 +1418,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1450,7 +1450,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1482,7 +1482,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9248,443, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.48 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1514,7 +1514,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9350,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b93.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1546,7 +1546,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1578,7 +1578,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9247,496, Days: 444.0) | Administrative sanction lag of 444 days (14.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (21.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.47 Lakh) shows anomalous spending velocity relative to approval time (444 days) | Administrative Sanction Lag: Took 14.8 months (444 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1610,7 +1610,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9300,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b93.00 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1642,7 +1642,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1674,7 +1674,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1706,7 +1706,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 544.0) | Administrative sanction lag of 544 days (18.1 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.6/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (544 days) | Administrative Sanction Lag: Took 18.1 months (544 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1738,7 +1738,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1770,7 +1770,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1802,7 +1802,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1834,7 +1834,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (26.0/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 713.0) | Administrative sanction lag of 713 days (23.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (26.0/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (713 days) | Administrative Sanction Lag: Took 23.8 months (713 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1866,7 +1866,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1898,7 +1898,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1930,7 +1930,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9250,000, Days: 534.0) | Administrative sanction lag of 534 days (17.8 months) between recommendation and approval.",
+    "explanation": "Low Risk (23.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b92.50 Lakh) shows anomalous spending velocity relative to approval time (534 days) | Administrative Sanction Lag: Took 17.8 months (534 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 245826.0,
     "q3": 400000.0,
     "iqr": 154174.0,
@@ -1955,13 +1955,13 @@
     "constituency": "FARIDKOT(SC)",
     "sanction_amount": 300000.0,
     "days_to_sanction": 11,
-    "risk_score": 38.9,
+    "risk_score": 34.6,
     "confidence_score": 0.55,
     "detectors_flagged_count": 1,
     "flags": [
       "FLAG_POSSIBLE_DUPLICATE"
     ],
-    "explanation": "Medium Risk (38.9/100, Moderate Confidence [1 detector(s) triggered]): Possible duplicate of work 'WRK-001170' (86.5% TF-IDF cosine similarity, Same Village/GP Indicated: Uncertain).",
+    "explanation": "Medium Risk (34.6/100, Moderate Confidence [1 detector(s) triggered]): Candidate Duplicate Work: 86.5% description similarity with Work ID #WRK-001170 in same constituency (~40% precision on manual validation due to standard scheme templates across villages; Location Match: Location Unspecified).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -1986,13 +1986,13 @@
     "constituency": "FARIDKOT(SC)",
     "sanction_amount": 100000.0,
     "days_to_sanction": 163,
-    "risk_score": 39.2,
+    "risk_score": 34.8,
     "confidence_score": 0.55,
     "detectors_flagged_count": 1,
     "flags": [
       "FLAG_POSSIBLE_DUPLICATE"
     ],
-    "explanation": "Medium Risk (39.2/100, Moderate Confidence [1 detector(s) triggered]): Possible duplicate of work 'WRK-001158' (87.0% TF-IDF cosine similarity, Same Village/GP Indicated: Uncertain).",
+    "explanation": "Medium Risk (34.8/100, Moderate Confidence [1 detector(s) triggered]): Candidate Duplicate Work: 87.0% description similarity with Work ID #WRK-001158 in same constituency (~40% precision on manual validation due to standard scheme templates across villages; Location Match: Location Unspecified).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2023,7 +2023,7 @@
     "flags": [
       "FLAG_COST_IQR_OUTLIER"
     ],
-    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): IQR Cost Outlier: Sanction \u20b91,000,000 exceeds upper bound \u20b9819,970 for Normal/Others in Madhya Pradesh.",
+    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): Cost Limit Deviation: Sanctioned cost of \u20b910.00 Lakh is above the upper percentile ceiling (\u20b98.20 Lakh) for 'Normal/Others' in Madhya Pradesh.",
     "q1": 100000.0,
     "q3": 387988.0,
     "iqr": 287988.0,
@@ -2054,7 +2054,7 @@
     "flags": [
       "FLAG_COST_IQR_OUTLIER"
     ],
-    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): IQR Cost Outlier: Sanction \u20b91,000,000 exceeds upper bound \u20b9819,970 for Normal/Others in Madhya Pradesh.",
+    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): Cost Limit Deviation: Sanctioned cost of \u20b910.00 Lakh is above the upper percentile ceiling (\u20b98.20 Lakh) for 'Normal/Others' in Madhya Pradesh.",
     "q1": 100000.0,
     "q3": 387988.0,
     "iqr": 287988.0,
@@ -2085,7 +2085,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2116,7 +2116,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2147,7 +2147,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2178,7 +2178,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2209,7 +2209,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2240,7 +2240,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2271,7 +2271,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2302,7 +2302,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2333,7 +2333,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2364,7 +2364,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b91,451,000, Days: 213.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b914.51 Lakh) shows anomalous spending velocity relative to approval time (213 days).",
     "q1": 499385.0,
     "q3": 1096000.0,
     "iqr": 596615.0,
@@ -2396,7 +2396,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (22.4/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b9487,094, Days: 487.0) | Administrative sanction lag of 487 days (16.2 months) between recommendation and approval.",
+    "explanation": "Low Risk (22.4/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b94.87 Lakh) shows anomalous spending velocity relative to approval time (487 days) | Administrative Sanction Lag: Took 16.2 months (487 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2427,7 +2427,7 @@
     "flags": [
       "FLAG_COST_IQR_OUTLIER"
     ],
-    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): IQR Cost Outlier: Sanction \u20b91,250,000 exceeds upper bound \u20b9926,756 for Normal/Others in Kerala.",
+    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): Cost Limit Deviation: Sanctioned cost of \u20b912.50 Lakh is above the upper percentile ceiling (\u20b99.27 Lakh) for 'Normal/Others' in Kerala.",
     "q1": 215496.0,
     "q3": 500000.0,
     "iqr": 284504.0,
@@ -2458,7 +2458,7 @@
     "flags": [
       "FLAG_COST_ANOMALY_COMBINED"
     ],
-    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): HIGH-CONFIDENCE COST ANOMALY (IQR + Isolation Forest): Sanction \u20b94,740,188 exceeds upper bound \u20b9926,756 (Q1: \u20b9215,496, Q3: \u20b9500,000, IQR: \u20b9284,504, N=197).",
+    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): Unusually High Cost Estimate: Sanctioned cost of \u20b947.40 Lakh exceeds the statistical peer limit of \u20b99.27 Lakh for 'Normal/Others' in Kerala (peer sample N=197, confirmed by dual statistical & ML models).",
     "q1": 215496.0,
     "q3": 500000.0,
     "iqr": 284504.0,
@@ -2489,7 +2489,7 @@
     "flags": [
       "FLAG_COST_IQR_OUTLIER"
     ],
-    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): IQR Cost Outlier: Sanction \u20b91,303,959 exceeds upper bound \u20b9926,756 for Normal/Others in Kerala.",
+    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): Cost Limit Deviation: Sanctioned cost of \u20b913.04 Lakh is above the upper percentile ceiling (\u20b99.27 Lakh) for 'Normal/Others' in Kerala.",
     "q1": 215496.0,
     "q3": 500000.0,
     "iqr": 284504.0,
@@ -2520,7 +2520,7 @@
     "flags": [
       "FLAG_COST_IQR_OUTLIER"
     ],
-    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): IQR Cost Outlier: Sanction \u20b91,182,588 exceeds upper bound \u20b9926,756 for Normal/Others in Kerala.",
+    "explanation": "Low Risk (20.0/100, Moderate Confidence [1 detector(s) triggered]): Cost Limit Deviation: Sanctioned cost of \u20b911.83 Lakh is above the upper percentile ceiling (\u20b99.27 Lakh) for 'Normal/Others' in Kerala.",
     "q1": 215496.0,
     "q3": 500000.0,
     "iqr": 284504.0,
@@ -2551,7 +2551,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b92,486,079, Days: 58.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b924.86 Lakh) shows anomalous spending velocity relative to approval time (58 days).",
     "q1": 477580.0,
     "q3": 1349512.5,
     "iqr": 871932.5,
@@ -2582,7 +2582,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b92,493,302, Days: 73.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b924.93 Lakh) shows anomalous spending velocity relative to approval time (73 days).",
     "q1": 477580.0,
     "q3": 1349512.5,
     "iqr": 871932.5,
@@ -2613,7 +2613,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b92,481,067, Days: 58.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b924.81 Lakh) shows anomalous spending velocity relative to approval time (58 days).",
     "q1": 477580.0,
     "q3": 1349512.5,
     "iqr": 871932.5,
@@ -2644,7 +2644,7 @@
     "flags": [
       "FLAG_COST_IFOREST_OUTLIER"
     ],
-    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b92,482,079, Days: 73.0).",
+    "explanation": "Low Risk (16.0/100, Moderate Confidence [1 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b924.82 Lakh) shows anomalous spending velocity relative to approval time (73 days).",
     "q1": 477580.0,
     "q3": 1349512.5,
     "iqr": 871932.5,
@@ -2675,7 +2675,7 @@
     "flags": [
       "FLAG_COST_ANOMALY_COMBINED"
     ],
-    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): HIGH-CONFIDENCE COST ANOMALY (IQR + Isolation Forest): Sanction \u20b91,998,845 exceeds upper bound \u20b91,072,307 (Q1: \u20b9249,986, Q3: \u20b9578,914, IQR: \u20b9328,928, N=675).",
+    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): Unusually High Cost Estimate: Sanctioned cost of \u20b919.99 Lakh exceeds the statistical peer limit of \u20b910.72 Lakh for 'Normal/Others' in West Bengal (peer sample N=675, confirmed by dual statistical & ML models).",
     "q1": 249985.5,
     "q3": 578914.0,
     "iqr": 328928.5,
@@ -2706,7 +2706,7 @@
     "flags": [
       "FLAG_COST_ANOMALY_COMBINED"
     ],
-    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): HIGH-CONFIDENCE COST ANOMALY (IQR + Isolation Forest): Sanction \u20b92,257,000 exceeds upper bound \u20b91,101,143 (Q1: \u20b999,238, Q3: \u20b9500,000, IQR: \u20b9400,762, N=264).",
+    "explanation": "Medium Risk (34.0/100, High Confidence [1 detector(s) triggered]): Unusually High Cost Estimate: Sanctioned cost of \u20b922.57 Lakh exceeds the statistical peer limit of \u20b911.01 Lakh for 'Normal/Others' in Rajasthan (peer sample N=264, confirmed by dual statistical & ML models).",
     "q1": 99237.75,
     "q3": 500000.0,
     "iqr": 400762.25,
@@ -2737,7 +2737,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2768,7 +2768,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2799,7 +2799,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2830,7 +2830,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2861,7 +2861,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2892,7 +2892,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2924,7 +2924,7 @@
       "FLAG_COST_IFOREST_OUTLIER",
       "FLAG_SANCTION_DELAY"
     ],
-    "explanation": "Low Risk (25.8/100, High Confidence [2 detector(s) triggered]): Isolation Forest Financial Outlier (Sanction \u20b996,734, Days: 657.0) | Administrative sanction lag of 657 days (21.9 months) between recommendation and approval.",
+    "explanation": "Low Risk (25.8/100, High Confidence [2 detector(s) triggered]): Unusual Financial Pattern: Sanctioned cost (\u20b996,734) shows anomalous spending velocity relative to approval time (657 days) | Administrative Sanction Lag: Took 21.9 months (657 days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline.",
     "q1": 215496.0,
     "q3": 500000.0,
     "iqr": 284504.0,
@@ -2955,7 +2955,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -2986,7 +2986,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -3017,7 +3017,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -3048,7 +3048,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -3079,7 +3079,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,
@@ -3110,7 +3110,7 @@
     "flags": [
       "FLAG_RAPID_SUBTHRESHOLD_SANCTIONS"
     ],
-    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under \u20b95L sub-threshold.",
+    "explanation": "Low Risk (12.2/100, Moderate Confidence [1 detector(s) triggered]): Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under \u20b95.00 Lakh (commonly reviewed for potential work splitting).",
     "q1": null,
     "q3": null,
     "iqr": null,

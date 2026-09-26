@@ -38,7 +38,7 @@ def detect_time_lags(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
             if sanc_lag_days > 365:
                 flags.append('FLAG_SANCTION_DELAY')
                 score += min(0.5, 0.2 + (sanc_lag_days - 365) / 1000.0)
-                details.append(f"Administrative sanction lag of {sanc_lag_days} days ({sanc_lag_days/30.0:.1f} months) between recommendation and approval")
+                details.append(f"Administrative Sanction Lag: Took {sanc_lag_days/30.0:.1f} months ({sanc_lag_days} days) between MP recommendation and administrative sanction, exceeding the 1-year standard timeline")
                 
         # 2. Stagnant / Uncompleted Sanctioned Work (> 2 years without completion)
         if pd.notna(s_d) and pd.isna(c_d) and 'complete' not in status:
@@ -46,14 +46,14 @@ def detect_time_lags(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
             if days_pending > 730:  # > 2 years
                 flags.append('FLAG_STAGNANT_WORK')
                 score += 0.5
-                details.append(f"Work has been sanctioned for {days_pending} days ({days_pending/365.0:.1f} years) without completion")
+                details.append(f"Project Execution Stagnation: Work has been sanctioned for {days_pending/365.0:.1f} years ({days_pending} days) without physical completion")
                 
         # 3. Completion predates sanction date (Data integrity conflict)
         if pd.notna(c_d) and pd.notna(s_d):
             if c_d < s_d:
                 flags.append('FLAG_DATE_INTEGRITY_CONFLICT')
                 score += 0.4
-                details.append(f"Data Conflict: Completion date ({c_d.strftime('%Y-%m-%d')}) predates Sanction date ({s_d.strftime('%Y-%m-%d')})")
+                details.append(f"Timeline Data Conflict: Recorded completion date ({c_d.strftime('%Y-%m-%d')}) predates sanction approval date ({s_d.strftime('%Y-%m-%d')})")
                 
         if flags:
             results[w_id] = {

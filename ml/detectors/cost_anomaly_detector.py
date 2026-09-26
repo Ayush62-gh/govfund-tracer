@@ -158,27 +158,34 @@ def detect_cost_anomalies(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
         if combined_cost_signal:
             w_flags.append('FLAG_COST_ANOMALY_COMBINED')
             anomaly_score += 0.85
+            ub_str = f"₹{iqr_data['upper_bound']/100000:.2f} Lakh" if iqr_data['upper_bound'] and iqr_data['upper_bound'] >= 100000 else f"₹{iqr_data['upper_bound']:,.0f}" if iqr_data['upper_bound'] else "N/A"
+            amt_str = f"₹{amt/100000:.2f} Lakh" if amt >= 100000 else f"₹{amt:,.0f}"
             details_list.append(
-                f"HIGH-CONFIDENCE COST ANOMALY (IQR + Isolation Forest): Sanction ₹{amt:,.0f} exceeds upper bound ₹{iqr_data['upper_bound']:,.0f} "
-                f"(Q1: ₹{iqr_data['q1']:,.0f}, Q3: ₹{iqr_data['q3']:,.0f}, IQR: ₹{iqr_data['iqr']:,.0f}, N={iqr_data['group_sample_count']})"
+                f"Unusually High Cost Estimate: Sanctioned cost of {amt_str} exceeds the statistical peer limit of {ub_str} "
+                f"for '{iqr_data['group_category']}' in {iqr_data['group_state']} (peer sample N={iqr_data['group_sample_count']}, confirmed by dual statistical & ML models)"
             )
         elif iqr_flag:
             w_flags.append('FLAG_COST_IQR_OUTLIER')
             anomaly_score += 0.50
+            ub_str = f"₹{iqr_data['upper_bound']/100000:.2f} Lakh" if iqr_data['upper_bound'] and iqr_data['upper_bound'] >= 100000 else f"₹{iqr_data['upper_bound']:,.0f}" if iqr_data['upper_bound'] else "N/A"
+            amt_str = f"₹{amt/100000:.2f} Lakh" if amt >= 100000 else f"₹{amt:,.0f}"
             details_list.append(
-                f"IQR Cost Outlier: Sanction ₹{amt:,.0f} exceeds upper bound ₹{iqr_data['upper_bound']:,.0f} "
-                f"for {iqr_data['group_category']} in {iqr_data['group_state']}"
+                f"Cost Limit Deviation: Sanctioned cost of {amt_str} is above the upper percentile ceiling ({ub_str}) "
+                f"for '{iqr_data['group_category']}' in {iqr_data['group_state']}"
             )
         elif iforest_flag:
             w_flags.append('FLAG_COST_IFOREST_OUTLIER')
             anomaly_score += 0.40
-            details_list.append(f"Isolation Forest Financial Outlier (Sanction ₹{amt:,.0f}, Days: {row['days_to_sanction']})")
+            amt_str = f"₹{amt/100000:.2f} Lakh" if amt >= 100000 else f"₹{amt:,.0f}"
+            details_list.append(f"Unusual Financial Pattern: Sanctioned cost ({amt_str}) shows anomalous spending velocity relative to approval time ({int(row['days_to_sanction'])} days)")
             
         if discrepancy_flag:
             w_flags.append('FLAG_COST_OVERRUN')
             anomaly_score += 0.40
             ratio_val = max(amt, disb) / min(amt, disb)
-            details_list.append(f"Disbursed ₹{disb:,.0f} conflicts with Sanctioned ₹{amt:,.0f} (Ratio: {ratio_val:.1f}x)")
+            disb_str = f"₹{disb/100000:.2f} Lakh" if disb >= 100000 else f"₹{disb:,.0f}"
+            amt_str = f"₹{amt/100000:.2f} Lakh" if amt >= 100000 else f"₹{amt:,.0f}"
+            details_list.append(f"Disbursement Variance: Disbursed amount ({disb_str}) differs from sanctioned estimate ({amt_str}) by {ratio_val:.1f}x")
 
         if w_flags:
             anomaly_score = min(1.0, anomaly_score)

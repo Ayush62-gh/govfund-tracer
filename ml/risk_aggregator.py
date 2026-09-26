@@ -32,11 +32,15 @@ def aggregate_risk_scores(
         if dup_data.get('flag'):
             combined_flags.append('FLAG_POSSIBLE_DUPLICATE')
             dup_score = dup_data.get('duplicate_score', 0.85)
-            dup_points = dup_score * 45.0
+            dup_points = dup_score * 40.0
             matched_id = dup_data.get('matched_work_id', 'UNKNOWN')
             sim_pct = round(dup_data.get('cosine_similarity', 0.85) * 100, 1)
-            loc_note = f"Same Village/GP Indicated: {dup_data.get('same_village_gp_indicated', 'Uncertain')}"
-            explanation_parts.append(f"Possible duplicate of work '{matched_id}' ({sim_pct}% TF-IDF cosine similarity, {loc_note})")
+            loc_status = dup_data.get('same_village_gp_indicated', 'Uncertain')
+            loc_note = "Confirmed Same Village" if loc_status == "True" else "Different Villages in Same Constituency" if loc_status == "False" else "Location Unspecified"
+            explanation_parts.append(
+                f"Candidate Duplicate Work: {sim_pct}% description similarity with Work ID #{matched_id} in same constituency "
+                f"(~40% precision on manual validation due to standard scheme templates across villages; Location Match: {loc_note})"
+            )
             
         # 2. Cost Anomaly Signal (Up to 40 pts)
         cost_points = 0.0

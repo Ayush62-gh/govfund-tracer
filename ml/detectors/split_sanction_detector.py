@@ -56,12 +56,13 @@ def detect_split_and_compliance(df: pd.DataFrame, df_alloc: pd.DataFrame = None)
                     
                 results[w_id]['flags'].append(flag_name)
                 
+                tot_str = f"₹{tot_sanctioned/100000:.2f} Lakh" if tot_sanctioned >= 100000 else f"₹{tot_sanctioned:,.0f}"
                 if tot_sanctioned > TRUST_SOCIETY_LIFETIME_CAP:
                     results[w_id]['split_compliance_score'] += 0.8
-                    results[w_id]['details'].append(f"BREACH: Trust/Society cumulative funding ₹{tot_sanctioned:,.0f} exceeds ₹50L lifetime cap ({pct:.1f}%)")
+                    results[w_id]['details'].append(f"MPLADS Guideline Breach (Para 3.21): Cumulative lifetime grants to Trust/Society '{entity}' reached {tot_str}, breaching the official ₹50.00 Lakh lifetime ceiling ({pct:.1f}%)")
                 else:
                     results[w_id]['split_compliance_score'] += 0.5
-                    results[w_id]['details'].append(f"APPROACHING CAP: Trust/Society cumulative funding ₹{tot_sanctioned:,.0f} reaches {pct:.1f}% of ₹50L lifetime cap")
+                    results[w_id]['details'].append(f"MPLADS Guideline Risk (Para 3.21): Cumulative lifetime grants to Trust/Society '{entity}' reached {tot_str} ({pct:.1f}% of official ₹50.00 Lakh ceiling)")
 
     # --------------------------------------------------------------------------
     # 2. FLAG_OUT_OF_CONSTITUENCY_CAP_BREACH Detection
@@ -106,6 +107,7 @@ def detect_split_and_compliance(df: pd.DataFrame, df_alloc: pd.DataFrame = None)
         tot_out_of_const = out_of_const_group['sanction_amount'].sum()
         
         if tot_out_of_const > OUT_OF_CONSTITUENCY_ANNUAL_CAP:
+            tot_out_str = f"₹{tot_out_of_const/100000:.2f} Lakh" if tot_out_of_const >= 100000 else f"₹{tot_out_of_const:,.0f}"
             for idx, row in out_of_const_group.iterrows():
                 w_id = row['work_id']
                 if w_id not in results:
@@ -113,7 +115,7 @@ def detect_split_and_compliance(df: pd.DataFrame, df_alloc: pd.DataFrame = None)
                     
                 results[w_id]['flags'].append('FLAG_OUT_OF_CONSTITUENCY_CAP_BREACH')
                 results[w_id]['split_compliance_score'] += 0.7
-                results[w_id]['details'].append(f"Out-of-constituency expenditure ₹{tot_out_of_const:,.0f} in {fy} breaches ₹25L annual cap")
+                results[w_id]['details'].append(f"MPLADS Guideline Risk: Annual out-of-constituency recommendations reached {tot_out_str} in {fy}, breaching the official ₹25.00 Lakh annual limit per MP")
 
     # --------------------------------------------------------------------------
     # 3. FLAG_RAPID_SUBTHRESHOLD_SANCTIONS (Pattern worth reviewing)
@@ -144,7 +146,8 @@ def detect_split_and_compliance(df: pd.DataFrame, df_alloc: pd.DataFrame = None)
                         if 'FLAG_RAPID_SUBTHRESHOLD_SANCTIONS' not in results[w_id]['flags']:
                             results[w_id]['flags'].append('FLAG_RAPID_SUBTHRESHOLD_SANCTIONS')
                             results[w_id]['split_compliance_score'] += 0.35  # Lower weight as specified
-                            results[w_id]['details'].append("Pattern worth reviewing: 3+ works sanctioned to same IDA within 14 days under ₹5L sub-threshold")
+                            results[w_id]['details'].append("Pattern Review Notice: 3+ works sanctioned to same agency within 14 days under ₹5.00 Lakh (commonly reviewed for potential work splitting)")
+
 
     # Post-process details formatting
     final_output = {}
