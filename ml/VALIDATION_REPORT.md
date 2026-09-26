@@ -160,3 +160,53 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
   * **`FLAG_POSSIBLE_DUPLICATE` (high confidence, adjusted score $\ge 0.6$)**: **1,246 records** (down from 1,250).
   * **`FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE` (adjusted score $0.4 \le s < 0.6$)**: **4 records** (absorbed the 4 template false positives).
   * **Total Combined Duplicate-Related Records**: **1,250 records** (total candidate count preserved for auditor review).
+
+### Step 3 — Mandal Keyword Disambiguation & False-Positive Elimination:
+* **False-Positive Discovery**: Manual verification of the new `FLAG_TRUST_ANNUAL_AGGREGATE_BREACH` flag revealed that all 26 flagged work_ids belonged to MP Daggumalla Prasada Rao and were false positives.
+* **Root Cause**: The keyword list in `extract_trust_name()` (`ml/utils/text_preprocessing.py`) included the bare word `'mandal'`, which incorrectly matched Andhra Pradesh/Telangana administrative unit names (e.g., "Palasamudram Mandal", "Penumuru Mandal" — a Mandal is a Tehsil-equivalent administrative unit in AP/Telangana, not a Trust/Society organization).
+* **Fix**: Removed bare `'mandal'` from the `keywords` list and added specific 2-word charitable-organization phrases (`'seva mandal'`, `'mahila mandal'`, `'yuva mandal'`, `'kalyan mandal'`).
+* **Re-Validation Results**:
+  * **`FLAG_TRUST_ANNUAL_AGGREGATE_BREACH` work_ids count**: Dropped from **26** down to **0**.
+  * **MP Daggumalla Prasada Rao's Trust Group**: False trust matches dropped from 75 works down to **0** trust matches and **0** breach flags.
+  * **Panchayat Samiti Disambiguation**: Removed bare `'samiti'` from `keywords` (adding 2-word charitable phrases `'seva samiti'`, `'mahila samiti'`, `'yuva samiti'`, `'kalyan samiti'`, `'vikas samiti'`) to prevent government Panchayati Raj local bodies ("Panchayat Samiti") from being misclassified as private trusts; `FLAG_TRUST_CAP_CIRCUMVENTION` count dropped from **2** to **1** (eliminating the false positive on WRK-002113).
+
+> **Known Limitation**: Works explicitly categorized as 'Trust and Society' where `extract_trust_name()` cannot extract a specific entity name default to an empty-string `trust_entity` key. Multiple genuinely DIFFERENT trusts belonging to the same MP with unextractable names would be incorrectly grouped and summed together under this shared empty key, potentially causing a false `FLAG_TRUST_CAP_CIRCUMVENTION`. This was not fixed in Phase 2 (would require either improving entity-name extraction coverage or excluding empty-entity works from lifetime-cap aggregation entirely) and is deferred to a future phase.
+
+---
+
+## Phase 3 — Feedback Infrastructure, Calibration, and Holistic ML Signal (2026-09-26)
+
+### 1. Feedback Infrastructure & Calibration Status:
+* **Feedback Capture Table (`ml_audit_feedback`)**: Added functions in `ml/utils/db_sync.py` (`save_audit_feedback()`, `get_audit_feedback()`, `count_labeled_feedback()`). The table was initialized and is currently empty (**0 labeled samples**).
+* **Weight Calibration (`ml/calibrate_weights.py`)**: Defined `MIN_LABELED_SAMPLES_REQUIRED = 30`. Running `python ml/calibrate_weights.py` confirmed that calibration correctly refused to calibrate weights due to insufficient data (**0 < 30 samples**), preventing small-sample overfitting noise. The system safely falls back to hardcoded heuristic `DETECTOR_WEIGHTS` in `ml/risk_aggregator.py`.
+
+### 2. Holistic Anomaly Detector (`ml/detectors/holistic_anomaly_detector.py`):
+* **Multivariate ML Signal (`FLAG_HOLISTIC_ML_ANOMALY`)**: Evaluates 6 engineered features (`sanction_amount`, `days_to_sanction`, `days_sanction_to_completion`, `category_code`, `work_status_code`, `disbursement_ratio`) fitted on per-`(state, category)` `IsolationForest` models (`contamination=0.05`, `random_state=42`, peer group size $\ge 10$).
+* **Detection & Overlap Breakdown**:
+  * **Total Holistic ML Anomalies Flagged**: **474 records**.
+  * **Overlap with Existing Detectors**: **343 records (72.4%)** were already flagged by at least one other detector module.
+  * **Net-New Anomalies**: **131 records (27.6%)** represent net-new multivariate anomalies discovered by the holistic ML model that no single-feature detector caught.
+
+### 3. Pipeline Summary & Updated Anomaly Counts:
+* **Total Records Processed**: 9,624
+* **Total Flagged Risk Records**: **2,420 (25.1%)**
+  * **Possible Duplicate Candidate Records**: 1,250
+  * **Cost IQR Outliers**: 418
+  * **Cost Isolation Forest Outliers**: 483
+  * **Combined High-Confidence Cost Anomalies (IQR + IF)**: 237
+  * **Fund Mismatch Variance Flags**: 0
+  * **Sanction Delay Flags (>365 days)**: 292
+  * **Compliance & Guideline Breach Flags**: 484
+  * **Holistic Multivariate ML Anomalies**: 474
+
+### 4. Risk Score & Confidence Column Distribution:
+* 🔴 **High Risk (66 - 100)**: **31 records (0.3%)**
+* 🟡 **Medium Risk (31 - 65)**: **1,593 records (16.6%)**
+* 🟢 **Low Risk (0 - 30)**: **8,000 records (83.1%)**
+* **Very High Confidence (`confidence = 0.95`)**: **111 records (1.2%)** (reflecting multi-detector agreement across 3+ modules).
+
+> **Methodology Note**: The Holistic Anomaly Detector is an **unsupervised** model fitted without ground-truth fraud labels. It identifies multi-feature statistical outliers within local peer groups for auditor review; supervised model calibration will be triggered once $\ge 30$ human audit verdicts are logged via `save_audit_feedback()`.
+
+
+
+

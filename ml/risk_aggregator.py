@@ -1,3 +1,5 @@
+import os
+import json
 from typing import Dict, Any, List
 
 # ==============================================================================
@@ -8,13 +10,42 @@ DUPLICATE_MANUAL_SAMPLE_SIZE_N = 5
 DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT = 40.0
 # ==============================================================================
 
+# Detector weights (Heuristic baseline defaults)
+DETECTOR_WEIGHTS = {
+    'duplicate': 40.0,
+    'cost': 40.0,
+    'split_compliance': 35.0,
+    'time_lag': 20.0,
+    'fund_mismatch': 35.0,
+    'holistic': 25.0  # Modest weight for newer, unvalidated holistic ML signal
+}
+
+# Check for calibrated weights file
+_ml_dir = os.path.dirname(os.path.abspath(__file__))
+_calibrated_file = os.path.join(_ml_dir, 'calibrated_weights.json')
+
+if os.path.exists(_calibrated_file):
+    try:
+        with open(_calibrated_file, 'r', encoding='utf-8') as _f:
+            _loaded_weights = json.load(_f)
+        if isinstance(_loaded_weights, dict) and set(_loaded_weights.keys()).issubset(set(DETECTOR_WEIGHTS.keys())):
+            DETECTOR_WEIGHTS.update({k: float(v) for k, v in _loaded_weights.items()})
+            print("[risk_aggregator] Using calibrated DETECTOR_WEIGHTS from ml/calibrated_weights.json")
+        else:
+            print("[risk_aggregator] WARNING: ml/calibrated_weights.json keys do not match expected DETECTOR_WEIGHTS. Using heuristic defaults.")
+    except Exception as _e:
+        print(f"[risk_aggregator] WARNING: Failed to load ml/calibrated_weights.json ({_e}). Using heuristic defaults.")
+else:
+    print("[risk_aggregator] Using heuristic DETECTOR_WEIGHTS (no calibrated_weights.json found)")
+
 def aggregate_risk_scores(
     df_works,
     dup_results: Dict[str, Dict[str, Any]],
     cost_results: Dict[str, Dict[str, Any]],
     split_results: Dict[str, Dict[str, Any]],
     time_results: Dict[str, Dict[str, Any]],
-    mismatch_results: Dict[str, Dict[str, Any]] = None
+    mismatch_results: Dict[str, Dict[str, Any]] = None,
+    holistic_results: Dict[str, Dict[str, Any]] = None
 ) -> List[Dict[str, Any]]:
     """
     Aggregates individual detector results into a unified Composite Risk Score (0-100),
@@ -25,6 +56,8 @@ def aggregate_risk_scores(
     """
     if mismatch_results is None:
         mismatch_results = {}
+    if holistic_results is None:
+        holistic_results = {}
         
     final_records = []
     
@@ -36,6 +69,7 @@ def aggregate_risk_scores(
         split_data = split_results.get(w_id, {})
         time_data = time_results.get(w_id, {})
         mismatch_data = mismatch_results.get(w_id, {})
+        holistic_data = holistic_results.get(w_id, {})
         
         combined_flags = []
         explanation_parts = []
@@ -45,7 +79,7 @@ def aggregate_risk_scores(
         if dup_data.get('flag'):
             combined_flags.append('FLAG_POSSIBLE_DUPLICATE')
             dup_score = dup_data.get('duplicate_score', 0.85)
-            dup_points = dup_score * 40.0
+            dup_points = dup_score * DETECTOR_WEIGHTS['duplicate']
             matched_id = dup_data.get('matched_work_id', 'UNKNOWN')
             sim_pct = round(dup_data.get('cosine_similarity', 0.85) * 100, 1)
             loc_status = dup_data.get('same_village_gp_indicated', 'Uncertain')
@@ -62,7 +96,7 @@ def aggregate_risk_scores(
                 if f not in combined_flags:
                     combined_flags.append(f)
             c_score = cost_data.get('cost_anomaly_score', 0.5)
-            cost_points = c_score * 40.0
+            cost_points = c_score * DETECTOR_WEIGHTS['cost']
             explanation_parts.append(cost_data.get('details', 'Cost anomaly detected'))
             
         # 3. Compliance / Split Signal (Up to 35 pts)
@@ -72,7 +106,7 @@ def aggregate_risk_scores(
                 if f not in combined_flags:
                     combined_flags.append(f)
             s_score = split_data.get('split_compliance_score', 0.5)
-            split_points = s_score * 35.0
+            split_points = s_score * DETECTOR_WEIGHTS['split_compliance']
             explanation_parts.append(split_data.get('details', 'Compliance/split sanction rule triggered'))
             
         # 4. Time Lag Signal (Up to 20 pts)
@@ -82,7 +116,7 @@ def aggregate_risk_scores(
                 if f not in combined_flags:
                     combined_flags.append(f)
             t_score = time_data.get('time_lag_score', 0.4)
-            time_points = t_score * 20.0
+            time_points = t_score * DETECTOR_WEIGHTS['time_lag']
             explanation_parts.append(time_data.get('details', 'Execution or sanction lag detected'))
 
         # 5. Fund Mismatch Signal (Up to 35 pts)
@@ -92,8 +126,18 @@ def aggregate_risk_scores(
                 if f not in combined_flags:
                     combined_flags.append(f)
             m_score = mismatch_data.get('fund_mismatch_score', 0.5)
-            mismatch_points = m_score * 35.0
+            mismatch_points = m_score * DETECTOR_WEIGHTS['fund_mismatch']
             explanation_parts.append(mismatch_data.get('details', 'Fund mismatch conflict detected'))
+            
+        # 6. Holistic ML Anomaly Signal (Up to 25 pts)
+        holistic_points = 0.0
+        if holistic_data.get('flags'):
+            for f in holistic_data['flags']:
+                if f not in combined_flags:
+                    combined_flags.append(f)
+            h_score = holistic_data.get('holistic_anomaly_score', 0.5)
+            holistic_points = h_score * DETECTOR_WEIGHTS['holistic']
+            explanation_parts.append(holistic_data.get('details', 'Holistic ML anomaly detected'))
             
         # Count independent detectors that triggered
         detectors_flagged = 0
@@ -106,6 +150,8 @@ def aggregate_risk_scores(
         if time_data.get('flags'):
             detectors_flagged += 1
         if mismatch_data.get('flags'):
+            detectors_flagged += 1
+        if holistic_data.get('flags'):
             detectors_flagged += 1
             
         # Calculate Heuristic Confidence Proxy (0.0 to 1.0)
@@ -131,7 +177,7 @@ def aggregate_risk_scores(
             confidence_level = "High Confidence (Low Risk)"
 
         # Composite score calculation (Max 100)
-        total_raw_points = dup_points + cost_points + split_points + time_points + mismatch_points
+        total_raw_points = dup_points + cost_points + split_points + time_points + mismatch_points + holistic_points
         composite_score = round(min(100.0, total_raw_points), 1)
         
         # Risk level classification
@@ -156,7 +202,9 @@ def aggregate_risk_scores(
             'explanation': explanation,
             'cost_metadata': cost_data,
             'dup_metadata': dup_data,
-            'mismatch_metadata': mismatch_data
+            'mismatch_metadata': mismatch_data,
+            'holistic_metadata': holistic_data
         })
         
     return final_records
+

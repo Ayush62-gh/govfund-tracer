@@ -83,3 +83,80 @@ def save_risk_results(risk_results: List[Dict[str, Any]]):
     conn.commit()
     conn.close()
     print(f"Successfully updated risk scores, flags, explanations, and numeric confidence values for {len(update_tuples)} works in SQLite database.")
+
+from datetime import datetime
+
+def save_audit_feedback(work_id: str, flag_code: str, verdict: str, note: str = "") -> None:
+    """
+    Saves human auditor feedback for a flagged work item into ml_audit_feedback table.
+    verdict must be one of: 'true_positive', 'false_positive', 'uncertain'.
+    """
+    valid_verdicts = {'true_positive', 'false_positive', 'uncertain'}
+    if verdict not in valid_verdicts:
+        raise ValueError(f"Invalid verdict '{verdict}'. Must be one of {valid_verdicts}.")
+        
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS ml_audit_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            work_id TEXT,
+            flag_code TEXT,
+            verdict TEXT,
+            note TEXT,
+            created_at TEXT
+        )
+    """)
+    
+    created_at = datetime.now().isoformat()
+    cur.execute("""
+        INSERT INTO ml_audit_feedback (work_id, flag_code, verdict, note, created_at)
+        VALUES (?, ?, ?, ?, ?)
+    """, (work_id, flag_code, verdict, note, created_at))
+    
+    conn.commit()
+    conn.close()
+
+def get_audit_feedback() -> pd.DataFrame:
+    """
+    Returns all rows from ml_audit_feedback as a pandas DataFrame.
+    Returns empty DataFrame if table doesn't exist or is empty.
+    """
+    db_path = get_db_path()
+    if not os.path.exists(db_path):
+        return pd.DataFrame(columns=['id', 'work_id', 'flag_code', 'verdict', 'note', 'created_at'])
+        
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ml_audit_feedback'")
+    if not cur.fetchone():
+        conn.close()
+        return pd.DataFrame(columns=['id', 'work_id', 'flag_code', 'verdict', 'note', 'created_at'])
+        
+    df = pd.read_sql_query("SELECT * FROM ml_audit_feedback", conn)
+    conn.close()
+    return df
+
+def count_labeled_feedback() -> int:
+    """
+    Returns the count of labeled feedback records ('true_positive' or 'false_positive').
+    Excludes 'uncertain' records.
+    """
+    db_path = get_db_path()
+    if not os.path.exists(db_path):
+        return 0
+        
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ml_audit_feedback'")
+    if not cur.fetchone():
+        conn.close()
+        return 0
+        
+    cur.execute("SELECT COUNT(*) FROM ml_audit_feedback WHERE verdict IN ('true_positive', 'false_positive')")
+    count = cur.fetchone()[0]
+    conn.close()
+    return count
+
