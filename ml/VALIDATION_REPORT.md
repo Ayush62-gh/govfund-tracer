@@ -199,13 +199,23 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
   * **Compliance & Guideline Breach Flags**: 484
   * **Holistic Multivariate ML Anomalies**: 474
 
-### 4. Risk Score & Confidence Column Distribution:
+### 4. Risk Score & Corrected Confidence Column Distribution:
 * 🔴 **High Risk (66 - 100)**: **31 records (0.3%)**
 * 🟡 **Medium Risk (31 - 65)**: **1,593 records (16.6%)**
 * 🟢 **Low Risk (0 - 30)**: **8,000 records (83.1%)**
-* **Very High Confidence (`confidence = 0.95`)**: **111 records (1.2%)** (reflecting multi-detector agreement across 3+ modules).
+* **Confidence Distribution Correction**:
+  * Because `FLAG_HOLISTIC_ML_ANOMALY` overlaps ~72.4% with the other single-feature detectors, counting it unconditionally in `detectors_flagged` inflated multi-detector confidence when it merely echoed an existing signal.
+  * `risk_aggregator.py` was corrected to increment `detectors_flagged` for `holistic_data` **ONLY when it represents a net-new finding** (i.e., no other detector fired for that work_id).
+  * **Before vs. After Corrected Confidence Breakdown**:
+    * **`confidence = 0.95`**: 111 $\rightarrow$ **27 records** (corrected inflated 3+ detector agreement count)
+    * **`confidence = 0.90`**: 7,204 $\rightarrow$ **7,427 records**
+    * **`confidence = 0.85`**: 79 $\rightarrow$ **152 records**
+    * **`confidence = 0.80`**: 499 $\rightarrow$ **418 records**
+    * **`confidence = 0.75`**: 938 $\rightarrow$ **951 records**
+    * **`confidence = 0.55`**: 793 $\rightarrow$ **649 records**
 
 > **Methodology Note**: The Holistic Anomaly Detector is an **unsupervised** model fitted without ground-truth fraud labels. It identifies multi-feature statistical outliers within local peer groups for auditor review; supervised model calibration will be triggered once $\ge 30$ human audit verdicts are logged via `save_audit_feedback()`.
+
 
 
 

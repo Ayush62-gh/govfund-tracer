@@ -141,17 +141,26 @@ def aggregate_risk_scores(
             
         # Count independent detectors that triggered
         detectors_flagged = 0
+        other_detectors_flagged = False
         if dup_data.get('flag'):
             detectors_flagged += 1
+            other_detectors_flagged = True
         if cost_data.get('flags'):
             detectors_flagged += 1
+            other_detectors_flagged = True
         if split_data.get('flags'):
             detectors_flagged += 1
+            other_detectors_flagged = True
         if time_data.get('flags'):
             detectors_flagged += 1
+            other_detectors_flagged = True
         if mismatch_data.get('flags'):
             detectors_flagged += 1
-        if holistic_data.get('flags'):
+            other_detectors_flagged = True
+            
+        # holistic detector overlaps ~72% with other detectors on this dataset (see VALIDATION_REPORT.md Phase 3)
+        # and is not treated as independent corroboration for confidence purposes unless it fires alone.
+        if holistic_data.get('flags') and not other_detectors_flagged:
             detectors_flagged += 1
             
         # Calculate Heuristic Confidence Proxy (0.0 to 1.0)
