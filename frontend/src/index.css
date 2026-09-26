@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --border-color: #E2E8F0;
+  }
+  
+  .dark {
+    --bg-primary: #090D16;
+    --bg-card: #111827;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --border-color: #1F2937;
+  }
+  
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
+}
+
+@layer components {
+  /* Government top tricolor ribbon */
+  .gov-tricolor-bar {
+    height: 3px;
+    background: linear-gradient(90deg, #FF671F 0%, #FF671F 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #046A38 66.6%, #046A38 100%);
+  }
+
+  .gov-tricolor-bar-thin {
+    height: 2px;
+    background: linear-gradient(90deg, #FF671F 33%, #0A2540 33%, #0A2540 66%, #046A38 66%);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .dark .glass-card {
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(55, 65, 81, 0.6);
+  }
+
+  .badge-pulse {
+    position: relative;
+  }
+  .badge-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 9999px;
+    background: inherit;
+    opacity: 0.4;
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+/* Custom interactive map styles */
+.state-path {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.state-path:hover {
+  filter: brightness(0.85);
+  transform: translateY(-1px);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
