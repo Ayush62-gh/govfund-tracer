@@ -8,7 +8,7 @@
 
 ## 📌 1. Pipeline Overview & Methods Actually Used
 
-The GovFund Tracer ML Risk Engine processes unified MPLADS work records from `backend/db/govfund.db` using four independent detector modules:
+The GovFund Tracer ML Risk Engine processes unified MPLADS work records from `backend/db/govfund.db` using five independent detector modules:
 
 ### A. Cost Anomaly Detector (`ml/detectors/cost_anomaly_detector.py`)
 * **Primary Method 1 (IQR Outlier)**: Grouped by `(state, category)`. IQR bounds ($Q3 + 1.5 \times \text{IQR}$) are calculated **only for groups with $\ge 10$ samples**. Groups with $<10$ samples are marked as `insufficient_baseline` and excluded from IQR flagging.
@@ -33,9 +33,13 @@ The GovFund Tracer ML Risk Engine processes unified MPLADS work records from `ba
   * `FLAG_OUT_OF_CONSTITUENCY_CAP_BREACH`: Annual out-of-constituency sanctions exceeding ₹25L per FY.
   * `FLAG_RAPID_SUBTHRESHOLD_SANCTIONS`: Pattern review signal for 3+ works sanctioned to the same IDA within 14 days under ₹5L. *(Clearly distinguished from official guideline violations)*.
 
-### E. Risk Aggregator & Heuristic Confidence Proxy (`ml/risk_aggregator.py`)
+### E. Fund Mismatch Detector (`ml/detectors/fund_mismatch_detector.py`)
+* **Method**: Detects financial discrepancies where ratio $>1.5$ and absolute difference $> \text{₹}50,000$ between sanctioned and disbursed amounts.
+* **Finding**: `0` records in current unified dataset. *Reason*: `ingest.py`'s own `validate_match()` function already filters out severe amount-mismatched pairs during CSV parsing before they can become unified `matched` rows, so zero amount-mismatched records reached the final merged `works` table.
+
+### F. Risk Aggregator & Numeric Confidence Column (`ml/risk_aggregator.py` & `ml/utils/db_sync.py`)
 * **Composite Risk Score (0 - 100)**: Weighted aggregation of independent signals.
-* **Heuristic Confidence Proxy (`confidence_score`)**: Ranges from `0.0` to `1.0` reflecting detector signal agreement (e.g. 3+ detectors = 0.95 Very High Confidence; 2 detectors = 0.80 High Confidence; 1 detector = 0.55-0.75 Moderate Confidence). Explicitly defined as a proxy for signal strength, **NOT a probability of fraud**.
+* **Numeric Confidence Column (`works.confidence`)**: Written as a REAL numeric value (`0.0` to `1.0`) directly into the SQLite database for every work record. Explicitly defined as a **Heuristic Confidence Proxy** for indicator agreement, **NOT a mathematical probability of fraud**.
 
 ---
 
@@ -51,18 +55,22 @@ Execution summary on **9,624 real work records** in `backend/db/govfund.db`:
 | - Cost IQR Outliers | 418 | 4.3% |
 | - Cost Isolation Forest Outliers | 481 | 5.0% |
 | - **Combined High-Confidence Cost Anomalies (IQR + IF)** | **198** | **2.1%** |
+| - Fund Mismatch Variance Flags | 0 | 0.0% |
 | - Sanction Delay Flags (>365 days) | 230 | 2.4% |
 | - Compliance & Guideline Breach Flags | 489 | 5.1% |
 
-### Risk Score Distribution (0 - 100):
-* 🔴 **High Risk (66 - 100)**: **16 records (0.2%)**
-* 🟡 **Medium Risk (31 - 65)**: **1,437 records (14.9%)**
+### Risk Score Distribution (SQL Query on `works.risk_score`):
+* 🔴 **High Risk (66 - 100)**: **13 records (0.1%)**
+* 🟡 **Medium Risk (31 - 65)**: **1,440 records (15.0%)**
 * 🟢 **Low Risk (0 - 30)**: **8,171 records (84.9%)**
 
-### Heuristic Confidence Proxy Distribution (0.0 - 1.0):
-* **Very High Confidence ($\ge 0.95$, 3+ detectors)**: 27 records
-* **High Confidence ($0.80 - 0.94$, 2 detectors or Combined Cost)**: 7,997 records
-* **Moderate Confidence ($<0.80$, 1 detector)**: 1,600 records
+### Numeric Confidence Column Distribution (SQL Query on `works.confidence`):
+* **`confidence = 0.95`** (Very High Confidence, 3+ detectors): **27 records (0.3%)**
+* **`confidence = 0.90`** (High Confidence, regular low-risk works): **7,427 records (77.2%)**
+* **`confidence = 0.85`** (High Confidence, Combined Cost Anomaly): **152 records (1.6%)**
+* **`confidence = 0.80`** (High Confidence, 2 detectors): **418 records (4.3%)**
+* **`confidence = 0.75`** (Moderate Confidence, high similarity / single detector): **951 records (9.9%)**
+* **`confidence = 0.55`** (Moderate Confidence, 1 detector): **649 records (6.7%)**
 
 ---
 
@@ -86,7 +94,7 @@ Manual inspection of 5 representative candidate pairs flagged by the Duplicate D
 
 1. **Templated & Boilerplate Project Descriptions**:
    * Standard government procurement text (e.g. *"Installation of solar street light"*, *"Construction of mid-day meal shed"*, *"Purchase of books for school"*) legitimately recurs across multiple distinct villages in the same constituency.
-   * Without fine-grained Village/Gram Panchayat entity parsing, high TF-IDF similarity flags these as duplicate candidates.
+   * Without fine-grained Village/Gram Panchayat entity parsing, high TF-IDF similarity flags these as duplicate candidates (~40% precision on manual sample).
 2. **Small Peer-Group Sample Sizes in Cost IQR**:
    * Groups with $<10$ samples are safely skipped (`insufficient_baseline`), but sparse categories in smaller states may miss legitimate outliers due to strict sample size constraints.
 3. **Lack of Ground-Truth Fraud Labels**:

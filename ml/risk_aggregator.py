@@ -5,7 +5,8 @@ def aggregate_risk_scores(
     dup_results: Dict[str, Dict[str, Any]],
     cost_results: Dict[str, Dict[str, Any]],
     split_results: Dict[str, Dict[str, Any]],
-    time_results: Dict[str, Dict[str, Any]]
+    time_results: Dict[str, Dict[str, Any]],
+    mismatch_results: Dict[str, Dict[str, Any]] = None
 ) -> List[Dict[str, Any]]:
     """
     Aggregates individual detector results into a unified Composite Risk Score (0-100),
@@ -14,6 +15,9 @@ def aggregate_risk_scores(
     IMPORTANT: confidence_score is a HEURISTIC CONFIDENCE PROXY (reflecting indicator agreement/signal strength),
     NOT a mathematical probability of fraud.
     """
+    if mismatch_results is None:
+        mismatch_results = {}
+        
     final_records = []
     
     for idx, row in df_works.iterrows():
@@ -23,11 +27,12 @@ def aggregate_risk_scores(
         cost_data = cost_results.get(w_id, {})
         split_data = split_results.get(w_id, {})
         time_data = time_results.get(w_id, {})
+        mismatch_data = mismatch_results.get(w_id, {})
         
         combined_flags = []
         explanation_parts = []
         
-        # 1. Duplicate Signal (Up to 45 pts)
+        # 1. Duplicate Signal (Up to 40 pts)
         dup_points = 0.0
         if dup_data.get('flag'):
             combined_flags.append('FLAG_POSSIBLE_DUPLICATE')
@@ -71,6 +76,16 @@ def aggregate_risk_scores(
             t_score = time_data.get('time_lag_score', 0.4)
             time_points = t_score * 20.0
             explanation_parts.append(time_data.get('details', 'Execution or sanction lag detected'))
+
+        # 5. Fund Mismatch Signal (Up to 35 pts)
+        mismatch_points = 0.0
+        if mismatch_data.get('flags'):
+            for f in mismatch_data['flags']:
+                if f not in combined_flags:
+                    combined_flags.append(f)
+            m_score = mismatch_data.get('fund_mismatch_score', 0.5)
+            mismatch_points = m_score * 35.0
+            explanation_parts.append(mismatch_data.get('details', 'Fund mismatch conflict detected'))
             
         # Count independent detectors that triggered
         detectors_flagged = 0
@@ -81,6 +96,8 @@ def aggregate_risk_scores(
         if split_data.get('flags'):
             detectors_flagged += 1
         if time_data.get('flags'):
+            detectors_flagged += 1
+        if mismatch_data.get('flags'):
             detectors_flagged += 1
             
         # Calculate Heuristic Confidence Proxy (0.0 to 1.0)
@@ -106,7 +123,7 @@ def aggregate_risk_scores(
             confidence_level = "High Confidence (Low Risk)"
 
         # Composite score calculation (Max 100)
-        total_raw_points = dup_points + cost_points + split_points + time_points
+        total_raw_points = dup_points + cost_points + split_points + time_points + mismatch_points
         composite_score = round(min(100.0, total_raw_points), 1)
         
         # Risk level classification
@@ -130,7 +147,8 @@ def aggregate_risk_scores(
             'flags': combined_flags,
             'explanation': explanation,
             'cost_metadata': cost_data,
-            'dup_metadata': dup_data
+            'dup_metadata': dup_data,
+            'mismatch_metadata': mismatch_data
         })
         
     return final_records
