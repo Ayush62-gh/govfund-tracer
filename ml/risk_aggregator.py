@@ -8,8 +8,11 @@ def aggregate_risk_scores(
     time_results: Dict[str, Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     """
-    Aggregates individual detector results into a unified Composite Risk Score (0-100)
-    and natural language explanations.
+    Aggregates individual detector results into a unified Composite Risk Score (0-100),
+    Heuristic Confidence Proxy (0.0 to 1.0), and natural language explanations.
+    
+    IMPORTANT: confidence_score is a HEURISTIC CONFIDENCE PROXY (reflecting indicator agreement/signal strength),
+    NOT a mathematical probability of fraud.
     """
     final_records = []
     
@@ -24,41 +27,45 @@ def aggregate_risk_scores(
         combined_flags = []
         explanation_parts = []
         
-        # Points allocation
+        # 1. Duplicate Signal (Up to 45 pts)
         dup_points = 0.0
         if dup_data.get('flag'):
-            combined_flags.append('FLAG_DUPLICATE_WORK')
-            dup_score = dup_data.get('duplicate_score', 0.8)
-            dup_points = dup_score * 45.0  # Up to 45 pts
+            combined_flags.append('FLAG_POSSIBLE_DUPLICATE')
+            dup_score = dup_data.get('duplicate_score', 0.85)
+            dup_points = dup_score * 45.0
             matched_id = dup_data.get('matched_work_id', 'UNKNOWN')
-            sim_pct = dup_data.get('similarity_pct', 80.0)
-            explanation_parts.append(f"Potential duplicate of work '{matched_id}' ({sim_pct}% textual & financial match)")
+            sim_pct = round(dup_data.get('cosine_similarity', 0.85) * 100, 1)
+            loc_note = f"Same Village/GP Indicated: {dup_data.get('same_village_gp_indicated', 'Uncertain')}"
+            explanation_parts.append(f"Possible duplicate of work '{matched_id}' ({sim_pct}% TF-IDF cosine similarity, {loc_note})")
             
+        # 2. Cost Anomaly Signal (Up to 40 pts)
         cost_points = 0.0
         if cost_data.get('flags'):
             for f in cost_data['flags']:
                 if f not in combined_flags:
                     combined_flags.append(f)
             c_score = cost_data.get('cost_anomaly_score', 0.5)
-            cost_points = c_score * 30.0  # Up to 30 pts
+            cost_points = c_score * 40.0
             explanation_parts.append(cost_data.get('details', 'Cost anomaly detected'))
             
+        # 3. Compliance / Split Signal (Up to 35 pts)
         split_points = 0.0
         if split_data.get('flags'):
             for f in split_data['flags']:
                 if f not in combined_flags:
                     combined_flags.append(f)
             s_score = split_data.get('split_compliance_score', 0.5)
-            split_points = s_score * 35.0  # Up to 35 pts
+            split_points = s_score * 35.0
             explanation_parts.append(split_data.get('details', 'Compliance/split sanction rule triggered'))
             
+        # 4. Time Lag Signal (Up to 20 pts)
         time_points = 0.0
         if time_data.get('flags'):
             for f in time_data['flags']:
                 if f not in combined_flags:
                     combined_flags.append(f)
             t_score = time_data.get('time_lag_score', 0.4)
-            time_points = t_score * 20.0  # Up to 20 pts
+            time_points = t_score * 20.0
             explanation_parts.append(time_data.get('details', 'Execution or sanction lag detected'))
             
         # Count independent detectors that triggered
@@ -72,23 +79,27 @@ def aggregate_risk_scores(
         if time_data.get('flags'):
             detectors_flagged += 1
             
-        # Calculate Confidence Score (0.0 to 1.0)
+        # Calculate Heuristic Confidence Proxy (0.0 to 1.0)
+        # Note: Higher agreement across independent detectors yields higher confidence in the risk indicator.
         if detectors_flagged >= 3:
             confidence_score = 0.95
-            confidence_level = "High Confidence"
+            confidence_level = "Very High Confidence"
         elif detectors_flagged == 2:
             confidence_score = 0.80
             confidence_level = "High Confidence"
         elif detectors_flagged == 1:
-            if dup_data.get('duplicate_score', 0) > 0.90 or cost_data.get('cost_anomaly_score', 0) > 0.80:
+            if cost_data.get('combined_cost_signal'):
+                confidence_score = 0.85
+                confidence_level = "High Confidence"
+            elif dup_data.get('cosine_similarity', 0) > 0.95:
                 confidence_score = 0.75
                 confidence_level = "Moderate Confidence"
             else:
                 confidence_score = 0.55
                 confidence_level = "Moderate Confidence"
         else:
-            confidence_score = 0.90  # Regular record with high confidence
-            confidence_level = "High Confidence"
+            confidence_score = 0.90  # High confidence in low-risk regular classification
+            confidence_level = "High Confidence (Low Risk)"
 
         # Composite score calculation (Max 100)
         total_raw_points = dup_points + cost_points + split_points + time_points
@@ -113,8 +124,9 @@ def aggregate_risk_scores(
             'confidence_score': round(confidence_score, 2),
             'detectors_flagged_count': detectors_flagged,
             'flags': combined_flags,
-            'explanation': explanation
+            'explanation': explanation,
+            'cost_metadata': cost_data,
+            'dup_metadata': dup_data
         })
         
     return final_records
-
