@@ -133,6 +133,16 @@ def run_pipeline():
     print("-" * 75)
     print(f"⏱️ Total Execution Time:                        {elapsed:.2f} seconds")
     print("=" * 75)
+    
+    return {
+        "total_records": len(final_risk_records),
+        "flagged_total": flagged_total,
+        "high_risk": high_risk,
+        "medium_risk": med_risk,
+        "low_risk": low_risk,
+        "elapsed": elapsed
+    }
+
 
 def export_validation_sample(df_works: pd.DataFrame, final_records: List[Dict[str, Any]]):
     """

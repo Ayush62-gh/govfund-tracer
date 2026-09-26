@@ -216,6 +216,28 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
 
 > **Methodology Note**: The Holistic Anomaly Detector is an **unsupervised** model fitted without ground-truth fraud labels. It identifies multi-feature statistical outliers within local peer groups for auditor review; supervised model calibration will be triggered once $\ge 30$ human audit verdicts are logged via `save_audit_feedback()`.
 
+---
+
+## Phase 4 — Scheduled Pipeline Automation (2026-09-26)
+
+### 1. Architectural Infrastructure
+* **Automated Runner (`ml/run_scheduled_pipeline.py`)**: Implemented a standalone scheduled execution script designed to be triggered via OS-level schedulers (Cron on Linux/Mac, Task Scheduler on Windows).
+* **30-Day Log Rotation**: Automatically purges log files in `ml/logs/` older than 30 days while preserving `.gitkeep` and `.pipeline.lock`.
+* **Concurrency Protection**: Uses a 2-hour file lock (`ml/logs/.pipeline.lock`). Attempts to trigger concurrent pipeline runs exit immediately with code `1`.
+* **Pre- & Post-Execution Database Snapshots**: Captures state snapshots of `(work_id, risk_score, flags)` before and after execution.
+* **Early Warning Diff Engine**: Computes delta statistics saved to `ml/logs/diff_<YYYYMMDD_HHMMSS>.json`:
+  * `newly_high_risk`: Works transitioning to `risk_score >= 66`.
+  * `newly_flagged`: Works moving from 0 flags to $\ge 1$ flags.
+  * `resolved`: Works transitioning from $\ge 1$ flags to 0 flags.
+  * `risk_score_increased_significantly`: Works experiencing a $> 15$ point score jump.
+* **Documentation (`ml/SCHEDULING.md`)**: Comprehensive operational guide covering Cron setup, Windows Task Scheduler parameters, log paths, and external trigger architectural notes.
+
+### 2. Empirical Verification & Test Results
+1. **Initial Pipeline Run**: Successfully processed all 9,624 work records, generated execution log (`ml/logs/pipeline_run_20260926_225419.log`), computed baseline diff report, and cleanly released file locks.
+2. **Subsequent Pipeline Run**: Verified diff engine computation on repeated run (`ml/logs/diff_20260926_225606.json`).
+3. **Concurrency Lock Enforcement**: Manually created `.pipeline.lock` and attempted execution. Script trapped lock collision, printed `[LOCK ERROR]`, aborted pipeline execution immediately with exit code `1`, and safely preserved existing state.
+
+
 
 
 
