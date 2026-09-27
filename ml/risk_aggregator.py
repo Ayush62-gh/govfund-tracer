@@ -5,9 +5,14 @@ from typing import Dict, Any, List
 # ==============================================================================
 # CONFIGURABLE MANUAL SAMPLE PRECISION CONSTANTS
 # ==============================================================================
-# Update these constants when wider manual validation sample results land (N ~ 30)
-DUPLICATE_MANUAL_SAMPLE_SIZE_N = 5
-DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT = 40.0
+# Based on a random (seed=7) N=30 sample drawn from FLAG_POSSIBLE_DUPLICATE
+# production output and manually read by a human reviewer against the raw
+# work_description text. This is a TEXT-PLAUSIBILITY judgment, not a
+# ground-truth-verified precision figure (no independent auditor
+# confirmation) — treat as a rough estimate, and re-sample with a larger N
+# before quoting this number externally.
+DUPLICATE_MANUAL_SAMPLE_SIZE_N = 30
+DUPLICATE_MANUAL_SAMPLE_PRECISION_PCT = 7.0
 # ==============================================================================
 
 # Detector weights (Heuristic baseline defaults)
