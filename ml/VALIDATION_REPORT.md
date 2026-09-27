@@ -170,7 +170,16 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
   * **MP Daggumalla Prasada Rao's Trust Group**: False trust matches dropped from 75 works down to **0** trust matches and **0** breach flags.
   * **Panchayat Samiti Disambiguation**: Removed bare `'samiti'` from `keywords` (adding 2-word charitable phrases `'seva samiti'`, `'mahila samiti'`, `'yuva samiti'`, `'kalyan samiti'`, `'vikas samiti'`) to prevent government Panchayati Raj local bodies ("Panchayat Samiti") from being misclassified as private trusts; `FLAG_TRUST_CAP_CIRCUMVENTION` count dropped from **2** to **1** (eliminating the false positive on WRK-002113).
 
+### Step 4 — Duplicate Detector Location Extraction Directionality Fix:
+* **Root Cause & Fix**: `extract_village_gp_tokens` previously only checked tokens appearing AFTER a prefix keyword ("village X", "gp Y"). In real Indian place names, administrative units frequently follow the location name ("Amudala Mandal", "Shivaji Nagar", "Ramnagar Ward"). Added `ADMIN_DIVISION_SUFFIX_KEYWORDS` (`["block", "ward", "nagar", "mandal", "sector", "tq", "taluka", "tehsil"]`) to inspect preceding words (and both directions for `"sector"`).
+* **Location Classification Shift**:
+  * **`True` (same village/GP/mandal/nagar matched)**: **115 pairs** (up from 99).
+  * **`Uncertain` (unspecified/no location token extracted)**: **1,133 pairs** (down from 1,147).
+  * **`False` (different location tokens detected in template text)**: **2 pairs** (down from 4).
+* **Flag Code Breakdown**: `FLAG_POSSIBLE_DUPLICATE`: 1,248 records; `FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE`: 2 records (total candidates: 1,250).
+
 > **Known Limitation**: Works explicitly categorized as 'Trust and Society' where `extract_trust_name()` cannot extract a specific entity name default to an empty-string `trust_entity` key. Multiple genuinely DIFFERENT trusts belonging to the same MP with unextractable names would be incorrectly grouped and summed together under this shared empty key, potentially causing a false `FLAG_TRUST_CAP_CIRCUMVENTION`. This was not fixed in Phase 2 (would require either improving entity-name extraction coverage or excluding empty-entity works from lifetime-cap aggregation entirely) and is deferred to a future phase.
+
 
 ---
 
