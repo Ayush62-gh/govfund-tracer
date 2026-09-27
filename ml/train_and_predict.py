@@ -20,6 +20,7 @@ from ml.detectors.cost_anomaly_detector import detect_cost_anomalies
 from ml.detectors.split_sanction_detector import detect_split_and_compliance
 from ml.detectors.time_lag_detector import detect_time_lags
 from ml.detectors.fund_mismatch_detector import detect_fund_mismatch
+from ml.detectors.holistic_anomaly_detector import detect_holistic_anomalies
 from ml.risk_aggregator import aggregate_risk_scores
 
 def run_pipeline():
@@ -30,18 +31,18 @@ def run_pipeline():
     start_time = time.time()
     
     # 1. Load Data from SQLite DB
-    print("\n[1/7] Loading work records and MP allocated limits from SQLite DB...")
+    print("\n[1/8] Loading work records and MP allocated limits from SQLite DB...")
     df_works = load_works_data()
     df_alloc = load_allocated_limits()
     print(f"      Loaded {len(df_works)} work records and {len(df_alloc)} MP limit records.")
     
     # 2. Run Duplicate Work Detector (TF-IDF Cosine >0.85 per (state, category) group)
-    print("\n[2/7] Running Duplicate Work Detector (TF-IDF Cosine >0.85)...")
+    print("\n[2/8] Running Duplicate Work Detector (TF-IDF Cosine >0.85)...")
     dup_results = detect_duplicates(df_works)
     print(f"      Identified {len(dup_results)} possible duplicate work candidate records.")
     
     # 3. Run Cost Anomaly Detector (IQR + Isolation Forest Combined Method)
-    print("\n[3/7] Running Cost Anomaly Detector (IQR + Isolation Forest Combined Method)...")
+    print("\n[3/8] Running Cost Anomaly Detector (IQR + Isolation Forest Combined Method)...")
     cost_results = detect_cost_anomalies(df_works)
     
     iqr_count = sum(1 for v in cost_results.values() if v.get('iqr_flag'))
@@ -52,24 +53,29 @@ def run_pipeline():
     print(f"      High-Confidence Combined Cost Anomalies (IQR + IF): {combined_cost_count}")
     
     # 4. Run Split Sanction & MPLADS Guidelines Compliance Detector
-    print("\n[4/7] Running Split Sanction & MPLADS Guidelines Compliance Detector...")
+    print("\n[4/8] Running Split Sanction & MPLADS Guidelines Compliance Detector...")
     split_results = detect_split_and_compliance(df_works, df_alloc)
     print(f"      Identified {len(split_results)} guideline compliance & pattern review records.")
     
     # 5. Run Time Lag & Stagnation Detector (Deterministic Rule)
-    print("\n[5/7] Running Time Lag & Stagnation Detector (Deterministic Rule)...")
+    print("\n[5/8] Running Time Lag & Stagnation Detector (Deterministic Rule)...")
     time_results = detect_time_lags(df_works)
     print(f"      Identified {len(time_results)} sanction delay & execution stagnation records.")
 
     # 6. Run Fund Mismatch Detector
-    print("\n[6/7] Running Fund Mismatch Detector...")
+    print("\n[6/8] Running Fund Mismatch Detector...")
     mismatch_results = detect_fund_mismatch(df_works)
     print(f"      Identified {len(mismatch_results)} fund mismatch variance records.")
     
-    # 7. Aggregate Composite Risk Scores & Heuristic Confidence Proxy
-    print("\n[7/7] Aggregating composite risk scores (0-100) & heuristic confidence proxy...")
+    # 7. Run Holistic Multivariate Anomaly Detector (Unsupervised ML)
+    print("\n[7/8] Running Holistic Multivariate Anomaly Detector (Unsupervised ML)...")
+    holistic_results = detect_holistic_anomalies(df_works)
+    print(f"      Identified {len(holistic_results)} multivariate holistic anomaly records.")
+    
+    # 8. Aggregate Composite Risk Scores & Heuristic Confidence Proxy
+    print("\n[8/8] Aggregating composite risk scores (0-100) & heuristic confidence proxy...")
     final_risk_records = aggregate_risk_scores(
-        df_works, dup_results, cost_results, split_results, time_results, mismatch_results
+        df_works, dup_results, cost_results, split_results, time_results, mismatch_results, holistic_results
     )
     
     # Save back to SQLite DB (updates risk_score, flags, explanation, confidence REAL column)
@@ -114,6 +120,7 @@ def run_pipeline():
     print(f"  - Fund Mismatch Variance Flags:               {len(mismatch_results)}")
     print(f"  - Sanction Delay Flags (>365 days):           {len(time_results)}")
     print(f"  - Compliance & Guideline Breach Flags:        {len(split_results)}")
+    print(f"  - Holistic Multivariate ML Anomalies:         {len(holistic_results)}")
     print("-" * 75)
     print("RISK SCORE DISTRIBUTION (SQL Query on 'works.risk_score'):")
     print(f"  🔴 High Risk (66-100):                       {high_risk} ({high_risk/len(final_risk_records)*100:.1f}%)")
@@ -126,6 +133,16 @@ def run_pipeline():
     print("-" * 75)
     print(f"⏱️ Total Execution Time:                        {elapsed:.2f} seconds")
     print("=" * 75)
+    
+    return {
+        "total_records": len(final_risk_records),
+        "flagged_total": flagged_total,
+        "high_risk": high_risk,
+        "medium_risk": med_risk,
+        "low_risk": low_risk,
+        "elapsed": elapsed
+    }
+
 
 def export_validation_sample(df_works: pd.DataFrame, final_records: List[Dict[str, Any]]):
     """
@@ -191,7 +208,7 @@ def export_validation_sample(df_works: pd.DataFrame, final_records: List[Dict[st
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(sample_list[:100], f, indent=2)
         
-    df_sample = pd.DataFrame(sample_list[:200])
+    df_sample = pd.DataFrame(sample_list)
     df_sample.to_csv(csv_path, index=False)
     
     print(f"\n[Validation Export] Generated sample validation JSON at: {json_path}")

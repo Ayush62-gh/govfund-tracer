@@ -103,24 +103,39 @@ def detect_cost_anomalies(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
             }
             
     # --------------------------------------------------------------------------
-    # METHOD B: Isolation Forest Detection
+    # METHOD B: Grouped Isolation Forest Detection per (state, category)
     # --------------------------------------------------------------------------
     iforest_flags = {}
+    global_sanction_median = df_calc['sanction_amount'].median()
     
-    # Prepare feature matrix: sanction_amount, days_to_sanction
-    feature_df = df_calc[['work_id', 'sanction_amount', 'days_to_sanction']].copy()
-    feature_df['sanction_amount'] = feature_df['sanction_amount'].fillna(feature_df['sanction_amount'].median())
-    
-    X = feature_df[['sanction_amount', 'days_to_sanction']].values
-    
-    if len(X) >= 10:
-        clf = IsolationForest(contamination=0.05, random_state=42)
-        preds = clf.fit_predict(X)
-        for w_id, pred in zip(feature_df['work_id'], preds):
-            iforest_flags[w_id] = (pred == -1)
-    else:
-        for w_id in feature_df['work_id']:
-            iforest_flags[w_id] = False
+    for (st, cat), group in df_calc.groupby(['state', 'category']):
+        work_ids = group['work_id'].tolist()
+        n_samples = len(group)
+        
+        if n_samples < 10:
+            # Insufficient baseline rule (<10 samples): do NOT fit model, mark false
+            for w_id in work_ids:
+                iforest_flags[w_id] = False
+            continue
+            
+        feature_df = group[['sanction_amount', 'days_to_sanction']].copy()
+        
+        # Fill missing sanction_amount: prefer group median, fallback to global median if NaN
+        group_median = feature_df['sanction_amount'].median()
+        fill_val = group_median if pd.notna(group_median) else global_sanction_median
+        feature_df['sanction_amount'] = feature_df['sanction_amount'].fillna(fill_val)
+        feature_df['days_to_sanction'] = feature_df['days_to_sanction'].fillna(0)
+        
+        X = feature_df[['sanction_amount', 'days_to_sanction']].values
+        
+        try:
+            clf = IsolationForest(contamination=0.05, random_state=42)
+            preds = clf.fit_predict(X)
+            for w_id, pred in zip(work_ids, preds):
+                iforest_flags[w_id] = bool(pred == -1)
+        except Exception:
+            for w_id in work_ids:
+                iforest_flags[w_id] = False
 
     # --------------------------------------------------------------------------
     # COMBINED COST SIGNAL & SCORE AGGREGATION
@@ -143,14 +158,8 @@ def detect_cost_anomalies(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
         iforest_flag = iforest_flags.get(w_id, False)
         combined_cost_signal = (iqr_flag and iforest_flag)
         
-        # Discrepancy ratio check (Sanction vs Disbursed)
-        discrepancy_flag = False
-        if pd.notna(disb) and pd.notna(amt) and amt > 0 and disb > 0:
-            ratio = max(amt, disb) / min(amt, disb)
-            diff = abs(amt - disb)
-            if ratio > 1.5 and diff > 50000:
-                discrepancy_flag = True
-
+        # Note: Sanction-vs-disbursed mismatch (cost overrun) is exclusively evaluated by fund_mismatch_detector.py.
+        # This detector evaluates cost-estimate anomalies only (IQR / Isolation Forest).
         w_flags = []
         details_list = []
         anomaly_score = 0.0
@@ -178,14 +187,6 @@ def detect_cost_anomalies(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
             anomaly_score += 0.40
             amt_str = f"₹{amt/100000:.2f} Lakh" if amt >= 100000 else f"₹{amt:,.0f}"
             details_list.append(f"Unusual Financial Pattern: Sanctioned cost ({amt_str}) shows anomalous spending velocity relative to approval time ({int(row['days_to_sanction'])} days)")
-            
-        if discrepancy_flag:
-            w_flags.append('FLAG_COST_OVERRUN')
-            anomaly_score += 0.40
-            ratio_val = max(amt, disb) / min(amt, disb)
-            disb_str = f"₹{disb/100000:.2f} Lakh" if disb >= 100000 else f"₹{disb:,.0f}"
-            amt_str = f"₹{amt/100000:.2f} Lakh" if amt >= 100000 else f"₹{amt:,.0f}"
-            details_list.append(f"Disbursement Variance: Disbursed amount ({disb_str}) differs from sanctioned estimate ({amt_str}) by {ratio_val:.1f}x")
 
         if w_flags:
             anomaly_score = min(1.0, anomaly_score)

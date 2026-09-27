@@ -9,20 +9,41 @@ from ml.utils.text_preprocessing import normalize_text
 def extract_village_gp_tokens(text: str) -> List[str]:
     """
     Extracts potential Village / Gram Panchayat / Location tokens from description string.
-    Looks for indicators like 'village X', 'gp Y', 'at Z', 'panchayat W', 'gram V'.
+    Looks for indicators like 'village X', 'gp Y', 'at Z', 'panchayat W', 'gram V',
+    as well as suffix administrative indicators like 'X mandal', 'Y nagar', 'Z ward', 'A block', etc.
+    Excludes generic non-place adjectives (e.g. 'different', 'various') via stoplist filtering.
     """
     norm = normalize_text(text)
     words = norm.split()
     tokens = []
     
     keywords = ["village", "vill", "gp", "panchayat", "gram", "maug", "bazar", "faliya", "game", "at", "near"]
+    admin_suffix_keywords = ["block", "ward", "nagar", "mandal", "sector", "tq", "taluka", "tehsil"]
+    all_keywords = set(keywords + admin_suffix_keywords)
+    location_stopwords = {"different", "various", "several", "multiple", "other", "same", "nearby", "adjoining"}
+
     for idx, w in enumerate(words):
+        # 1. Existing prefix keywords: keyword -> next word
         if w in keywords and idx + 1 < len(words):
             next_word = words[idx + 1]
-            if len(next_word) > 2 and next_word not in keywords:
+            if len(next_word) > 2 and next_word not in all_keywords and next_word.lower() not in location_stopwords:
                 tokens.append(next_word)
                 
+        # 2. Suffix administrative keywords: preceding word -> keyword
+        if w in admin_suffix_keywords:
+            if idx > 0:
+                prev_word = words[idx - 1]
+                if len(prev_word) > 2 and prev_word not in all_keywords and prev_word.lower() not in location_stopwords:
+                    tokens.append(prev_word)
+            # Special case for 'sector': also check following word ("Sector 5", "Sector A")
+            if w == "sector" and idx + 1 < len(words):
+                next_word = words[idx + 1]
+                if len(next_word) > 2 and next_word not in all_keywords and next_word.lower() not in location_stopwords:
+                    tokens.append(next_word)
+                
     return tokens
+
+
 
 def detect_duplicates(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
     """
@@ -106,17 +127,43 @@ def detect_duplicates(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
                 elif tokens_i or tokens_j:
                     same_village = "Uncertain"
                     
+                same_constituency = (str(const_i or '').strip().lower() == str(constituencies[best_j_idx] or '').strip().lower())
+                
+                if not same_constituency:
+                    location_match_basis = "constituency_mismatch"
+                else:
+                    if same_village == "True":
+                        location_match_basis = "village_token_match"
+                    elif same_village == "False":
+                        location_match_basis = "village_token_mismatch"
+                    else:
+                        location_match_basis = "unresolved"
+
+                raw_cosine = max_sim
+                adj_score = raw_cosine
+                if (not same_constituency) or (same_village == "False"):
+                    adj_score = raw_cosine * 0.5
+                    
+                if adj_score >= 0.6:
+                    flag_code = 'FLAG_POSSIBLE_DUPLICATE'
+                elif adj_score >= 0.4:
+                    flag_code = 'FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE'
+                else:
+                    continue  # Adjusted score < 0.4: exclude from results
+                    
                 results[w_id_i] = {
-                    'duplicate_score': round(max_sim, 4),
-                    'cosine_similarity': round(max_sim, 4),
+                    'duplicate_score': round(adj_score, 4),
+                    'cosine_similarity': round(raw_cosine, 4),
                     'matched_work_id': best_match_id,
                     'flag': True,
-                    'flag_code': 'FLAG_POSSIBLE_DUPLICATE',
+                    'flag_code': flag_code,
                     'location_1': f"{const_i}, {st}",
                     'location_2': f"{constituencies[best_j_idx]}, {st}",
                     'village_gp_1': v_gp_i,
                     'village_gp_2': v_gp_j,
-                    'same_village_gp_indicated': same_village
+                    'same_village_gp_indicated': same_village,
+                    'same_constituency': same_constituency,
+                    'location_match_basis': location_match_basis
                 }
                 
     return results
