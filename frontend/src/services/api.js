@@ -12,7 +12,6 @@ import {
   MOCK_STATE_DATA,
   MOCK_SYSTEM_CONFIG,
   USER_CREDENTIALS,
-  MOCK_RISK_RECORDS,
   validateRiskContract,
   getRiskTier,
 } from '../data/mockData';
@@ -501,7 +500,7 @@ export const api = {
       });
       if (res.ok) {
         const json = await res.json();
-        if (json && json.items && Array.isArray(json.items) && json.items.length > 0) {
+        if (json && json.items && Array.isArray(json.items)) {
           let records = json.items.map((item) => ({
             work_id: item.work_id,
             state: item.state || 'Unassigned',
@@ -536,37 +535,16 @@ export const api = {
           return new ApiResponse(200, records);
         }
       }
-    } catch {
-      // Backend fetch failed, falling back to mock records
+      return new ApiResponse(res.status || 500, [], {
+        code: 'BACKEND_ERROR',
+        message: 'Could not fetch risk scores from backend server.',
+      });
+    } catch (err) {
+      return new ApiResponse(503, [], {
+        code: 'BACKEND_UNAVAILABLE',
+        message: err?.message || 'Could not connect to backend server.',
+      });
     }
-
-    await delay();
-    let records = [...MOCK_RISK_RECORDS];
-
-    // Filter by state if provided
-    if (filters.state && filters.state !== 'all') {
-      records = records.filter((r) => r.state === filters.state);
-    }
-    // Filter by category
-    if (filters.category && filters.category !== 'all') {
-      records = records.filter((r) => r.category === filters.category);
-    }
-    // Filter by flag
-    if (filters.flag && filters.flag !== 'all') {
-      if (filters.flag === 'multiple') {
-        records = records.filter((r) => r.flags.length >= 2);
-      } else if (filters.flag === 'none') {
-        records = records.filter((r) => r.flags.length === 0);
-      } else {
-        records = records.filter((r) => r.flags.includes(filters.flag));
-      }
-    }
-    // Filter by tier
-    if (filters.tier && filters.tier !== 'all') {
-      records = records.filter((r) => getRiskTier(r.risk_score) === filters.tier);
-    }
-
-    return new ApiResponse(200, records);
   },
 
   /**
@@ -595,20 +573,16 @@ export const api = {
           explanation: item.explanation || 'Compliant with scheme guidelines.',
         });
       }
-    } catch {
-      // Fallback
-    }
-
-    await delay();
-    const record = MOCK_RISK_RECORDS.find((r) => r.work_id === workId);
-    if (!record) {
-      return new ApiResponse(404, null, {
-        code: 'NOT_FOUND',
-        message: `Risk score record for work ${workId} was not found.`,
+      return new ApiResponse(res.status, null, {
+        code: 'BACKEND_ERROR',
+        message: `Backend returned status ${res.status} for work ${workId}.`,
+      });
+    } catch (err) {
+      return new ApiResponse(503, null, {
+        code: 'BACKEND_UNAVAILABLE',
+        message: `Could not connect to backend server to fetch risk score for work ${workId}.`,
       });
     }
-
-    return new ApiResponse(200, record);
   },
 
   /**
