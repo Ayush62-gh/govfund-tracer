@@ -184,6 +184,23 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
 * **Note**: This explicitly replaces the earlier $N=5$ / 40% figure, which undersampled and did not reflect the detector's true production-scale precision.
 * **Structural Observation from Manual Review**: The detector currently groups by `(state, category)` only, with no `mp_name`/constituency awareness. Most false-positive duplicates observed were the SAME boilerplate MPLADS scheme wording (e.g. standard book-purchase or high-mast-light language) legitimately reused across DIFFERENT MPs/constituencies funding the same scheme category — not one MP double-billing the same work. Adding `mp_name` to the grouping key would reduce some cross-MP noise, but would not resolve the core issue: most flagged descriptions lack any specific location (village/school/GP name) to distinguish genuinely duplicate claims from legitimate repeated scheme funding. A reliable fix would need a dedicated location/beneficiary-name field in the source data, which is not currently available. Deferred as a data limitation, not an algorithm fix, for a future phase if such a field becomes available.
 
+### Structured Constituency Signal Addition (2026-09-27):
+* **Signal Integration**: Integrated structured `constituency` column matching (`same_constituency`) as the primary location-mismatch check alongside free-text village token extraction.
+* **Logic & Penalty**:
+  * If `same_constituency == False` (different constituency), a `0.5x` score penalty is applied regardless of free-text extraction outcome, setting `location_match_basis = "constituency_mismatch"`.
+  * If `same_constituency == True`, falls back to existing village-token extraction (`"village_token_match"`, `"village_token_mismatch"`, or `"unresolved"`).
+  * A single `0.5x` penalty applies if either constituency or village tokens indicate a mismatch (no double-penalization).
+* **Empirical Impact Breakdown (9,624 Dataset)**:
+  * **Constituency Mismatches (`same_constituency == False`)**: **12 records** previously falling into `"Uncertain"` with no penalty now receive the 0.5x location-mismatch penalty.
+  * **Flag Code Shift**:
+    * `FLAG_POSSIBLE_DUPLICATE` (high confidence, score $\ge 0.6$): **1,236 records** (down from 1,248).
+    * `FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE` (moderate confidence, $0.4 \le s < 0.6$): **14 records** (up from 2).
+  * **Location Match Basis Distribution**:
+    * `unresolved`: **1,164 records**
+    * `village_token_match`: **72 records**
+    * `constituency_mismatch`: **12 records**
+    * `village_token_mismatch`: **2 records**
+
 
 > **Known Limitation**: Works explicitly categorized as 'Trust and Society' where `extract_trust_name()` cannot extract a specific entity name default to an empty-string `trust_entity` key. Multiple genuinely DIFFERENT trusts belonging to the same MP with unextractable names would be incorrectly grouped and summed together under this shared empty key, potentially causing a false `FLAG_TRUST_CAP_CIRCUMVENTION`. This was not fixed in Phase 2 (would require either improving entity-name extraction coverage or excluding empty-entity works from lifetime-cap aggregation entirely) and is deferred to a future phase.
 

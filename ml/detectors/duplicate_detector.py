@@ -127,9 +127,21 @@ def detect_duplicates(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
                 elif tokens_i or tokens_j:
                     same_village = "Uncertain"
                     
+                same_constituency = (str(const_i or '').strip().lower() == str(constituencies[best_j_idx] or '').strip().lower())
+                
+                if not same_constituency:
+                    location_match_basis = "constituency_mismatch"
+                else:
+                    if same_village == "True":
+                        location_match_basis = "village_token_match"
+                    elif same_village == "False":
+                        location_match_basis = "village_token_mismatch"
+                    else:
+                        location_match_basis = "unresolved"
+
                 raw_cosine = max_sim
                 adj_score = raw_cosine
-                if same_village == "False":
+                if (not same_constituency) or (same_village == "False"):
                     adj_score = raw_cosine * 0.5
                     
                 if adj_score >= 0.6:
@@ -149,7 +161,9 @@ def detect_duplicates(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
                     'location_2': f"{constituencies[best_j_idx]}, {st}",
                     'village_gp_1': v_gp_i,
                     'village_gp_2': v_gp_j,
-                    'same_village_gp_indicated': same_village
+                    'same_village_gp_indicated': same_village,
+                    'same_constituency': same_constituency,
+                    'location_match_basis': location_match_basis
                 }
                 
     return results
