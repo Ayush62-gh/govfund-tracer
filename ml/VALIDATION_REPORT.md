@@ -177,6 +177,8 @@ Manual inspection of representative candidate pairs flagged by the Duplicate Det
   * **`Uncertain` (unspecified/no location token extracted)**: **1,133 pairs** (down from 1,147).
   * **`False` (different location tokens detected in template text)**: **2 pairs** (down from 4).
 * **Flag Code Breakdown**: `FLAG_POSSIBLE_DUPLICATE`: 1,248 records; `FLAG_POSSIBLE_DUPLICATE_LOW_CONFIDENCE`: 2 records (total candidates: 1,250).
+* **Location Stoplist Filtering**: Added `location_stopwords` set (`"different"`, `"various"`, `"several"`, `"multiple"`, `"other"`, `"same"`, `"nearby"`, `"adjoining"`) to `extract_village_gp_tokens` to filter out non-place adjectives; `True` count adjusted from 115 to 72 (`Uncertain` 1,176), preventing false-positive location matching on generic phrases.
+
 
 > **Known Limitation**: Works explicitly categorized as 'Trust and Society' where `extract_trust_name()` cannot extract a specific entity name default to an empty-string `trust_entity` key. Multiple genuinely DIFFERENT trusts belonging to the same MP with unextractable names would be incorrectly grouped and summed together under this shared empty key, potentially causing a false `FLAG_TRUST_CAP_CIRCUMVENTION`. This was not fixed in Phase 2 (would require either improving entity-name extraction coverage or excluding empty-entity works from lifetime-cap aggregation entirely) and is deferred to a future phase.
 

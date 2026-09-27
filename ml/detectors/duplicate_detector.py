@@ -11,6 +11,7 @@ def extract_village_gp_tokens(text: str) -> List[str]:
     Extracts potential Village / Gram Panchayat / Location tokens from description string.
     Looks for indicators like 'village X', 'gp Y', 'at Z', 'panchayat W', 'gram V',
     as well as suffix administrative indicators like 'X mandal', 'Y nagar', 'Z ward', 'A block', etc.
+    Excludes generic non-place adjectives (e.g. 'different', 'various') via stoplist filtering.
     """
     norm = normalize_text(text)
     words = norm.split()
@@ -19,27 +20,29 @@ def extract_village_gp_tokens(text: str) -> List[str]:
     keywords = ["village", "vill", "gp", "panchayat", "gram", "maug", "bazar", "faliya", "game", "at", "near"]
     admin_suffix_keywords = ["block", "ward", "nagar", "mandal", "sector", "tq", "taluka", "tehsil"]
     all_keywords = set(keywords + admin_suffix_keywords)
+    location_stopwords = {"different", "various", "several", "multiple", "other", "same", "nearby", "adjoining"}
 
     for idx, w in enumerate(words):
         # 1. Existing prefix keywords: keyword -> next word
         if w in keywords and idx + 1 < len(words):
             next_word = words[idx + 1]
-            if len(next_word) > 2 and next_word not in all_keywords:
+            if len(next_word) > 2 and next_word not in all_keywords and next_word.lower() not in location_stopwords:
                 tokens.append(next_word)
                 
         # 2. Suffix administrative keywords: preceding word -> keyword
         if w in admin_suffix_keywords:
             if idx > 0:
                 prev_word = words[idx - 1]
-                if len(prev_word) > 2 and prev_word not in all_keywords:
+                if len(prev_word) > 2 and prev_word not in all_keywords and prev_word.lower() not in location_stopwords:
                     tokens.append(prev_word)
             # Special case for 'sector': also check following word ("Sector 5", "Sector A")
             if w == "sector" and idx + 1 < len(words):
                 next_word = words[idx + 1]
-                if len(next_word) > 2 and next_word not in all_keywords:
+                if len(next_word) > 2 and next_word not in all_keywords and next_word.lower() not in location_stopwords:
                     tokens.append(next_word)
                 
     return tokens
+
 
 
 def detect_duplicates(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
