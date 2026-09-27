@@ -26,7 +26,6 @@ import {
 } from 'lucide-react';
 import RiskScoreCard from './RiskScoreCard';
 import RiskScoreModal from './RiskScoreModal';
-import RiskContractLiveTester from './RiskContractLiveTester';
 import {
   FLAG_METADATA,
 
@@ -38,7 +37,7 @@ import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export const RiskScoreContractViewer = ({ initialFilter = 'all' }) => {
-  const [activeView, setActiveView] = useState('grid'); // 'grid' | 'table' | 'json' | 'tester'
+  const [activeView, setActiveView] = useState('grid'); // 'grid' | 'table' | 'json'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRiskTier, setSelectedRiskTier] = useState(initialFilter); // 'all' | 'high' | 'medium' | 'low'
   const [selectedFlag, setSelectedFlag] = useState('all'); // 'all' | 'cost_outlier' | 'possible_duplicate' | 'delayed' | 'fund_mismatch' | 'multiple' | 'none'
@@ -179,16 +178,16 @@ export const RiskScoreContractViewer = ({ initialFilter = 'all' }) => {
 
   return (
     <div className="space-y-6">
-      {/* Non-Negotiable Privacy Protocol Notice */}
-      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-blue-500/10 border border-amber-300 dark:border-amber-800/60 flex items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200">
-          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+      {/* Live Backend ML Engine Status Notice */}
+      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-emerald-500/10 border border-blue-200 dark:border-blue-800/60 flex items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2.5 text-blue-900 dark:text-blue-200">
+          <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
           <span>
-            <strong>Demo Privacy Compliance:</strong> All risk scores, anomaly flags, MP designations, and agency names are 100% synthetic mock demonstration records conforming strictly to the official backend contract.
+            <strong>Live Backend ML Engine:</strong> All risk scores, anomaly flags, confidence ratings, and explanations are dynamically computed and served in real-time by the backend ML API.
           </span>
         </div>
-        <span className="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100">
-          CONTRACT v1.0
+        <span className="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100">
+          LIVE API v1.0
         </span>
       </div>
 
@@ -512,20 +511,6 @@ export const RiskScoreContractViewer = ({ initialFilter = 'all' }) => {
               >
                 <Code2 className="w-4 h-4" />
               </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveView('tester')}
-                title="Interactive Schema Validator & Payload Tester"
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
-                  activeView === 'tester'
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Tester</span>
-              </button>
             </div>
           </div>
         </div>
@@ -749,14 +734,6 @@ export const RiskScoreContractViewer = ({ initialFilter = 'all' }) => {
           <div className="p-4 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-xs border border-slate-800 overflow-x-auto max-h-[500px] shadow-inner leading-relaxed">
             <pre>{JSON.stringify(filteredRecords, null, 2)}</pre>
           </div>
-        </div>
-      )}
-
-      {activeView === 'tester' && (
-        <div className="animate-fade-in">
-          <RiskContractLiveTester
-            onSelectWork={(item) => setInspectingWork(item)}
-          />
         </div>
       )}
 
